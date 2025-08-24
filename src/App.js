@@ -237,13 +237,30 @@ function App() {
         </button>
       </div>
       {showInstructions && (
-        <div className="instructions">
-          <p>Enter letters and click to change colours:</p>
-          <ul>
-            <li><span className="gray-example">Gray</span> - Letter not in word</li>
-            <li><span className="yellow-example">Yellow</span> - Letter in word, wrong position</li>
-            <li><span className="green-example">Green</span> - Letter in correct position</li>
-          </ul>
+        <div className="instructions-overlay" onClick={() => setShowInstructions(false)}>
+          <div className="instructions-popup" onClick={(e) => e.stopPropagation()}>
+            <button 
+              className="close-button" 
+              onClick={() => setShowInstructions(false)}
+              aria-label="Close instructions"
+            >
+              ×
+            </button>
+            <h3>How to Use</h3>
+            <p><strong>Entering Guesses:</strong></p>
+            <ul>
+              <li>Type letters on your keyboard - they automatically fill the first empty spot</li>
+              <li>Press Backspace to delete the last letter entered</li>
+              <li>On mobile, use the on-screen keyboard at the bottom</li>
+            </ul>
+            <p><strong>Setting Colors:</strong></p>
+            <ul>
+              <li>Click any letter to cycle through colors</li>
+              <li><span className="gray-example">Gray</span> - Letter not in word</li>
+              <li><span className="yellow-example">Yellow</span> - Letter in word, wrong position</li>
+              <li><span className="green-example">Green</span> - Letter in correct position</li>
+            </ul>
+          </div>
         </div>
       )}
       <div className="main-container">
