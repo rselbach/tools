@@ -11,7 +11,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "npm run build && rsync -avz --delete build/ robteix.com:/data/www/wsolver/"
   },
   "eslintConfig": {
     "extends": [
