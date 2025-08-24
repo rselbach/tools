@@ -9,11 +9,9 @@ const LETTER_STATES = {
 
 function App() {
   const [rows, setRows] = useState(() => Array(6).fill(null).map(() => createEmptyRow()));
-  const [focusedCell, setFocusedCell] = useState({ row: 0, col: 0 });
   const [wordList, setWordList] = useState([]);
   const [filteredWords, setFilteredWords] = useState([]);
   const [useCommonWords, setUseCommonWords] = useState(false);
-  const hiddenInputRef = useRef(null);
 
   function createEmptyRow() {
     return Array(5).fill(null).map(() => ({
@@ -97,82 +95,56 @@ function App() {
     setFilteredWords(filtered.slice(0, 20));
   }, [rows, wordList]);
 
+  // add global keyboard event listeners
   useEffect(() => {
-    // keep hidden input focused for keyboard events
-    if (hiddenInputRef.current) {
-      hiddenInputRef.current.focus();
-    }
-  }, [focusedCell]);
-
-  const handleKeyInput = (e) => {
-    const { row, col } = focusedCell;
-    const key = e.key.toUpperCase();
-    
-    // handle letter input
-    if (key.length === 1 && key >= 'A' && key <= 'Z') {
-      const newRows = [...rows];
-      newRows[row][col].letter = key;
-      setRows(newRows);
+    const handleKeyDown = (e) => {
+      const key = e.key.toUpperCase();
       
-      // move focus to next cell if not at end of row
-      if (col < 4) {
-        setFocusedCell({ row, col: col + 1 });
-      } else if (row < 5) {
-        // move to first cell of next row if not on last row
-        setFocusedCell({ row: row + 1, col: 0 });
-      }
-    }
-  };
-
-  const handleKeyDown = (e) => {
-    const { row, col } = focusedCell;
-    
-    if (e.key === 'Backspace') {
-      e.preventDefault();
-      const currentCell = rows[row][col];
-      
-      if (currentCell.letter === '') {
-        if (col > 0) {
-          // if current cell is empty and not first in row, move to previous cell in same row
-          setFocusedCell({ row, col: col - 1 });
-          // clear the previous cell
-          const newRows = [...rows];
-          newRows[row][col - 1].letter = '';
-          setRows(newRows);
-        } else if (row > 0) {
-          // if current cell is empty and is first in row, move to last cell of previous row
-          setFocusedCell({ row: row - 1, col: 4 });
+      // handle letter input - find first empty cell and fill it
+      if (key.length === 1 && key >= 'A' && key <= 'Z') {
+        e.preventDefault();
+        for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+          for (let colIndex = 0; colIndex < 5; colIndex++) {
+            if (rows[rowIndex][colIndex].letter === '') {
+              const newRows = [...rows];
+              newRows[rowIndex][colIndex].letter = key;
+              setRows(newRows);
+              return; // exit after filling the first empty cell
+            }
+          }
         }
-      } else {
-        // clear current cell
-        const newRows = [...rows];
-        newRows[row][col].letter = '';
-        setRows(newRows);
-        
-        if (col > 0) {
-          // move to previous cell in same row
-          setFocusedCell({ row, col: col - 1 });
-        } else if (row > 0) {
-          // if at beginning of row, move to last cell of previous row
-          setFocusedCell({ row: row - 1, col: 4 });
+      } 
+      // handle backspace - find last filled cell and clear it
+      else if (e.key === 'Backspace') {
+        e.preventDefault();
+        for (let rowIndex = rows.length - 1; rowIndex >= 0; rowIndex--) {
+          for (let colIndex = 4; colIndex >= 0; colIndex--) {
+            if (rows[rowIndex][colIndex].letter !== '') {
+              const newRows = [...rows];
+              newRows[rowIndex][colIndex].letter = '';
+              newRows[rowIndex][colIndex].state = LETTER_STATES.GRAY; // reset color to gray
+              setRows(newRows);
+              return; // exit after clearing the last filled cell
+            }
+          }
         }
       }
-    } else if (e.key === 'ArrowLeft' && col > 0) {
-      setFocusedCell({ row, col: col - 1 });
-    } else if (e.key === 'ArrowRight' && col < 4) {
-      setFocusedCell({ row, col: col + 1 });
-    } else if (e.key === 'ArrowUp' && row > 0) {
-      setFocusedCell({ row: row - 1, col });
-    } else if (e.key === 'ArrowDown' && row < 5) {
-      setFocusedCell({ row: row + 1, col });
-    }
-  };
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [rows]);
 
   const handleCellClick = (rowIndex, colIndex) => {
-    // set focus to clicked cell
-    setFocusedCell({ row: rowIndex, col: colIndex });
+    // only cycle the state if the cell has a letter
+    const cell = rows[rowIndex][colIndex];
+    if (cell.letter === '') {
+      return; // do nothing for empty cells
+    }
     
-    // cycle the state
     const newRows = [...rows];
     const currentState = newRows[rowIndex][colIndex].state;
     
@@ -220,25 +192,12 @@ function App() {
             </label>
           </div>
           <div className="wordle-grid">
-            {/* Hidden input to capture keyboard events */}
-            <input
-              ref={hiddenInputRef}
-              type="text"
-              className="hidden-input"
-              onKeyDown={handleKeyDown}
-              onKeyPress={handleKeyInput}
-              aria-hidden="true"
-              tabIndex={-1}
-            />
-            
             {rows.map((row, rowIndex) => (
               <div key={rowIndex} className="wordle-row">
                 {row.map((cell, colIndex) => (
                   <div
                     key={colIndex}
-                    className={`wordle-cell ${cell.state} ${
-                      focusedCell.row === rowIndex && focusedCell.col === colIndex ? 'focused' : ''
-                    }`}
+                    className={`wordle-cell ${cell.state}`}
                     onClick={() => handleCellClick(rowIndex, colIndex)}
                   >
                     {cell.letter}

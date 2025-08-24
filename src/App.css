@@ -123,13 +123,6 @@ h1 {
   gap: 5px;
 }
 
-.hidden-input {
-  position: absolute;
-  left: -9999px;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-}
 
 .wordle-cell {
   width: 60px;
@@ -147,10 +140,6 @@ h1 {
   user-select: none;
 }
 
-.wordle-cell.focused {
-  outline: 3px solid #878a8c;
-  outline-offset: -1px;
-}
 
 .wordle-cell.gray {
   background-color: #787c7e;
