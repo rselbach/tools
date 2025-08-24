@@ -108,6 +108,15 @@ function App() {
             if (rows[rowIndex][colIndex].letter === '') {
               const newRows = [...rows];
               newRows[rowIndex][colIndex].letter = key;
+              
+              // check previous rows for same letter in same position and copy the color
+              for (let prevRowIndex = rowIndex - 1; prevRowIndex >= 0; prevRowIndex--) {
+                if (rows[prevRowIndex][colIndex].letter === key) {
+                  newRows[rowIndex][colIndex].state = rows[prevRowIndex][colIndex].state;
+                  break; // use the most recent matching color
+                }
+              }
+              
               setRows(newRows);
               return; // exit after filling the first empty cell
             }
@@ -163,7 +172,14 @@ function App() {
         nextState = LETTER_STATES.GRAY;
     }
     
-    newRows[rowIndex][colIndex].state = nextState;
+    // update this cell and all matching cells (same letter, same position)
+    const letter = cell.letter;
+    for (let r = 0; r < newRows.length; r++) {
+      if (newRows[r][colIndex].letter === letter) {
+        newRows[r][colIndex].state = nextState;
+      }
+    }
+    
     setRows(newRows);
   };
 
