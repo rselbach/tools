@@ -12,6 +12,7 @@ function App() {
   const [wordList, setWordList] = useState([]);
   const [filteredWords, setFilteredWords] = useState([]);
   const [useCommonWords, setUseCommonWords] = useState(false);
+  const [wordLimit, setWordLimit] = useState(20);
 
   function createEmptyRow() {
     return Array(5).fill(null).map(() => ({
@@ -28,7 +29,7 @@ function App() {
       .then(text => {
         const words = text.split('\n').filter(word => word.trim().length === 5);
         setWordList(words);
-        setFilteredWords(words.slice(0, 20));
+        setFilteredWords(words.slice(0, wordLimit));
       })
       .catch(error => console.error('Error loading wordlist:', error));
   }, [useCommonWords]);
@@ -92,8 +93,8 @@ function App() {
       return true;
     });
     
-    setFilteredWords(filtered.slice(0, 20));
-  }, [rows, wordList]);
+    setFilteredWords(filtered.slice(0, wordLimit));
+  }, [rows, wordList, wordLimit]);
 
   // add global keyboard event listeners
   useEffect(() => {
@@ -224,12 +225,54 @@ function App() {
           </div>
         </div>
         <div className="right-panel">
-          <h2>Possible Words ({filteredWords.length}{wordList.length > 0 && filteredWords.length >= 20 ? '+' : ''})</h2>
+          <h2>Possible Words ({filteredWords.length}{wordList.length > 0 && filteredWords.length >= wordLimit ? '+' : ''})</h2>
+          <div className="word-limit-selector">
+            <label htmlFor="word-limit">Show: </label>
+            <select 
+              id="word-limit" 
+              value={wordLimit} 
+              onChange={(e) => setWordLimit(parseInt(e.target.value))}
+            >
+              <option value={10}>10 words</option>
+              <option value={20}>20 words</option>
+              <option value={50}>50 words</option>
+              <option value={100}>100 words</option>
+            </select>
+          </div>
           <div className="word-list">
             {filteredWords.length > 0 ? (
               filteredWords.map((word, index) => (
                 <div key={index} className="word-item">
-                  {word.toUpperCase()}
+                  {word.toUpperCase().split('').map((letter, letterIndex) => {
+                    // determine letter color based on constraints
+                    let letterClass = '';
+                    
+                    // check if this letter in this position is green (confirmed correct)
+                    const isGreen = rows.some(row => 
+                      row[letterIndex].letter === letter && 
+                      row[letterIndex].state === LETTER_STATES.GREEN
+                    );
+                    
+                    // check if this letter appears as yellow anywhere (in word but wrong position)
+                    const isYellow = !isGreen && rows.some(row => 
+                      row.some(cell => 
+                        cell.letter === letter && 
+                        cell.state === LETTER_STATES.YELLOW
+                      )
+                    );
+                    
+                    if (isGreen) {
+                      letterClass = 'letter-green';
+                    } else if (isYellow) {
+                      letterClass = 'letter-yellow';
+                    }
+                    
+                    return (
+                      <span key={letterIndex} className={letterClass}>
+                        {letter}
+                      </span>
+                    );
+                  })}
                 </div>
               ))
             ) : (

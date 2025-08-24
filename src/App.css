@@ -181,6 +181,35 @@ h1 {
   font-size: 20px;
 }
 
+.word-limit-selector {
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.word-limit-selector label {
+  margin-right: 8px;
+  font-weight: 500;
+}
+
+.word-limit-selector select {
+  padding: 4px 8px;
+  font-size: 14px;
+  border: 1px solid #d3d6da;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.word-limit-selector select:hover {
+  border-color: #878a8c;
+}
+
+.word-limit-selector select:focus {
+  outline: none;
+  border-color: #878a8c;
+}
+
 .word-list {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -201,6 +230,22 @@ h1 {
   font-size: 14px;
   letter-spacing: 1px;
   text-align: center;
+}
+
+.letter-green {
+  background-color: #6aaa64;
+  color: white;
+  padding: 2px 4px;
+  border-radius: 2px;
+  margin: 0 1px;
+}
+
+.letter-yellow {
+  background-color: #c9b458;
+  color: white;
+  padding: 2px 4px;
+  border-radius: 2px;
+  margin: 0 1px;
 }
 
 .no-words {
