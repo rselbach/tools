@@ -267,6 +267,74 @@ h1 {
   }
 }
 
+/* Virtual Keyboard */
+.virtual-keyboard {
+  display: none; /* hidden by default, shown on mobile */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #f0f0f0;
+  padding: 4px 2px;
+  border-top: 1px solid #d3d6da;
+  z-index: 1000;
+}
+
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 3px;
+  gap: 2px;
+}
+
+.keyboard-row:last-child {
+  margin-bottom: 0;
+}
+
+.keyboard-key {
+  flex: 1;
+  max-width: 38px;
+  height: 52px;
+  padding: 0;
+  background: white;
+  border: 1px solid #d3d6da;
+  border-radius: 4px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.1s;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.keyboard-key:active {
+  background: #e0e0e0;
+  transform: scale(0.95);
+}
+
+.keyboard-backspace {
+  max-width: 55px;
+  background: #ff6b6b;
+  color: white;
+  border-color: #ff5252;
+  font-size: 22px;
+}
+
+.keyboard-backspace:active {
+  background: #ff5252;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  .virtual-keyboard {
+    display: block;
+  }
+  
+  .App {
+    padding-bottom: 175px; /* make room for keyboard */
+  }
+}
+
 @media (max-width: 400px) {
   .wordle-cell {
     width: 50px;
@@ -276,5 +344,22 @@ h1 {
   
   .word-list {
     grid-template-columns: 1fr;
+  }
+  
+  .keyboard-key {
+    max-width: 35px;
+    height: 48px;
+    font-size: 16px;
+    padding: 0;
+  }
+  
+  .keyboard-row {
+    gap: 2px;
+    margin-bottom: 2px;
+  }
+  
+  .keyboard-backspace {
+    max-width: 50px;
+    font-size: 20px;
   }
 }

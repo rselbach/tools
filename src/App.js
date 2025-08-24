@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
 const LETTER_STATES = {
@@ -148,6 +148,45 @@ function App() {
     };
   }, [rows]);
 
+  // handle virtual keyboard input
+  const handleVirtualKeyPress = (key) => {
+    if (key === 'BACKSPACE') {
+      // handle backspace
+      for (let rowIndex = rows.length - 1; rowIndex >= 0; rowIndex--) {
+        for (let colIndex = 4; colIndex >= 0; colIndex--) {
+          if (rows[rowIndex][colIndex].letter !== '') {
+            const newRows = [...rows];
+            newRows[rowIndex][colIndex].letter = '';
+            newRows[rowIndex][colIndex].state = LETTER_STATES.GRAY;
+            setRows(newRows);
+            return;
+          }
+        }
+      }
+    } else {
+      // handle letter input
+      for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+        for (let colIndex = 0; colIndex < 5; colIndex++) {
+          if (rows[rowIndex][colIndex].letter === '') {
+            const newRows = [...rows];
+            newRows[rowIndex][colIndex].letter = key;
+            
+            // check previous rows for same letter in same position and copy the color
+            for (let prevRowIndex = rowIndex - 1; prevRowIndex >= 0; prevRowIndex--) {
+              if (rows[prevRowIndex][colIndex].letter === key) {
+                newRows[rowIndex][colIndex].state = rows[prevRowIndex][colIndex].state;
+                break;
+              }
+            }
+            
+            setRows(newRows);
+            return;
+          }
+        }
+      }
+    }
+  };
+
   const handleCellClick = (rowIndex, colIndex) => {
     // only cycle the state if the cell has a letter
     const cell = rows[rowIndex][colIndex];
@@ -279,6 +318,49 @@ function App() {
               <div className="no-words">No matching words found</div>
             )}
           </div>
+        </div>
+      </div>
+      
+      {/* Virtual Keyboard for Mobile */}
+      <div className="virtual-keyboard">
+        <div className="keyboard-row">
+          {['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'].map(letter => (
+            <button 
+              key={letter} 
+              className="keyboard-key"
+              onClick={() => handleVirtualKeyPress(letter)}
+            >
+              {letter}
+            </button>
+          ))}
+        </div>
+        <div className="keyboard-row">
+          {['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'].map(letter => (
+            <button 
+              key={letter} 
+              className="keyboard-key"
+              onClick={() => handleVirtualKeyPress(letter)}
+            >
+              {letter}
+            </button>
+          ))}
+        </div>
+        <div className="keyboard-row">
+          {['Z', 'X', 'C', 'V', 'B', 'N', 'M'].map(letter => (
+            <button 
+              key={letter} 
+              className="keyboard-key"
+              onClick={() => handleVirtualKeyPress(letter)}
+            >
+              {letter}
+            </button>
+          ))}
+          <button 
+            className="keyboard-key keyboard-backspace"
+            onClick={() => handleVirtualKeyPress('BACKSPACE')}
+          >
+            ⌫
+          </button>
         </div>
       </div>
     </div>
