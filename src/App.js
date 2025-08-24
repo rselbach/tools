@@ -13,6 +13,7 @@ function App() {
   const [filteredWords, setFilteredWords] = useState([]);
   const [useCommonWords, setUseCommonWords] = useState(false);
   const [wordLimit, setWordLimit] = useState(20);
+  const [showInstructions, setShowInstructions] = useState(false);
 
   function createEmptyRow() {
     return Array(5).fill(null).map(() => ({
@@ -225,28 +226,29 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Wordle Solver</h1>
+      <div className="header">
+        <h1>Wordle Solver</h1>
+        <button 
+          className="help-button" 
+          onClick={() => setShowInstructions(!showInstructions)}
+          aria-label="Toggle instructions"
+        >
+          ?
+        </button>
+      </div>
+      {showInstructions && (
+        <div className="instructions">
+          <p>Enter letters and click to change colours:</p>
+          <ul>
+            <li><span className="gray-example">Gray</span> - Letter not in word</li>
+            <li><span className="yellow-example">Yellow</span> - Letter in word, wrong position</li>
+            <li><span className="green-example">Green</span> - Letter in correct position</li>
+          </ul>
+        </div>
+      )}
       <div className="main-container">
         <div className="left-panel">
-          <div className="instructions">
-            <p>Enter letters and click to change colours:</p>
-            <ul>
-              <li><span className="gray-example">Gray</span> - Letter not in word</li>
-              <li><span className="yellow-example">Yellow</span> - Letter in word, wrong position</li>
-              <li><span className="green-example">Green</span> - Letter in correct position</li>
-            </ul>
-          </div>
-          <div className="wordlist-toggle">
-            <label className="toggle-switch">
-              <input
-                type="checkbox"
-                checked={useCommonWords}
-                onChange={(e) => setUseCommonWords(e.target.checked)}
-              />
-              <span className="toggle-slider"></span>
-              <span className="toggle-label">Limit to common words</span>
-            </label>
-          </div>
+          <h2>Enter Your Guesses</h2>
           <div className="wordle-grid">
             {rows.map((row, rowIndex) => (
               <div key={rowIndex} className="wordle-row">
@@ -265,19 +267,6 @@ function App() {
         </div>
         <div className="right-panel">
           <h2>Possible Words ({filteredWords.length}{wordList.length > 0 && filteredWords.length >= wordLimit ? '+' : ''})</h2>
-          <div className="word-limit-selector">
-            <label htmlFor="word-limit">Show: </label>
-            <select 
-              id="word-limit" 
-              value={wordLimit} 
-              onChange={(e) => setWordLimit(parseInt(e.target.value))}
-            >
-              <option value={10}>10 words</option>
-              <option value={20}>20 words</option>
-              <option value={50}>50 words</option>
-              <option value={100}>100 words</option>
-            </select>
-          </div>
           <div className="word-list">
             {filteredWords.length > 0 ? (
               filteredWords.map((word, index) => (
@@ -317,6 +306,32 @@ function App() {
             ) : (
               <div className="no-words">No matching words found</div>
             )}
+          </div>
+          <div className="word-filters">
+            <div className="word-limit-selector">
+              <label htmlFor="word-limit">Show: </label>
+              <select 
+                id="word-limit" 
+                value={wordLimit} 
+                onChange={(e) => setWordLimit(parseInt(e.target.value))}
+              >
+                <option value={10}>10 words</option>
+                <option value={20}>20 words</option>
+                <option value={50}>50 words</option>
+                <option value={100}>100 words</option>
+              </select>
+            </div>
+            <div className="wordlist-toggle">
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={useCommonWords}
+                  onChange={(e) => setUseCommonWords(e.target.checked)}
+                />
+                <span className="toggle-slider"></span>
+                <span className="toggle-label">Common words only</span>
+              </label>
+            </div>
           </div>
         </div>
       </div>
