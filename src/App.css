@@ -1,0 +1,246 @@
+.App {
+  text-align: center;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.wordlist-toggle {
+  margin-bottom: 25px;
+  margin-top: -5px;
+}
+
+.toggle-switch {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle-switch input[type="checkbox"] {
+  display: none;
+}
+
+.toggle-slider {
+  width: 48px;
+  height: 24px;
+  background-color: #d3d6da;
+  border-radius: 24px;
+  margin-right: 12px;
+  position: relative;
+  transition: background-color 0.3s;
+}
+
+.toggle-slider::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: white;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.3s;
+}
+
+.toggle-switch input[type="checkbox"]:checked + .toggle-slider {
+  background-color: #6aaa64;
+}
+
+.toggle-switch input[type="checkbox"]:checked + .toggle-slider::after {
+  transform: translateX(24px);
+}
+
+.toggle-label {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+.instructions {
+  margin-bottom: 30px;
+  text-align: left;
+  background: #f5f5f5;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.instructions p {
+  margin: 0 0 10px 0;
+  font-weight: 500;
+}
+
+.instructions ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.instructions li {
+  margin: 5px 0;
+}
+
+.gray-example {
+  background-color: #787c7e;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-weight: bold;
+}
+
+.yellow-example {
+  background-color: #c9b458;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-weight: bold;
+}
+
+.green-example {
+  background-color: #6aaa64;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-weight: bold;
+}
+
+.wordle-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
+}
+
+.wordle-row {
+  display: flex;
+  gap: 5px;
+}
+
+.hidden-input {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.wordle-cell {
+  width: 60px;
+  height: 60px;
+  border: 2px solid #d3d6da;
+  font-size: 28px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+  user-select: none;
+}
+
+.wordle-cell.focused {
+  outline: 3px solid #878a8c;
+  outline-offset: -1px;
+}
+
+.wordle-cell.gray {
+  background-color: #787c7e;
+  color: white;
+  border-color: #787c7e;
+}
+
+.wordle-cell.yellow {
+  background-color: #c9b458;
+  color: white;
+  border-color: #c9b458;
+}
+
+.wordle-cell.green {
+  background-color: #6aaa64;
+  color: white;
+  border-color: #6aaa64;
+}
+
+.main-container {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.left-panel {
+  flex-shrink: 0;
+}
+
+.right-panel {
+  min-width: 300px;
+  text-align: left;
+}
+
+.right-panel h2 {
+  color: #333;
+  margin-bottom: 15px;
+  font-size: 20px;
+}
+
+.word-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  max-height: 500px;
+  overflow-y: auto;
+  padding: 10px;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+
+.word-item {
+  padding: 8px 12px;
+  background: white;
+  border-radius: 4px;
+  border: 1px solid #e0e0e0;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.no-words {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #999;
+  padding: 20px;
+}
+
+@media (max-width: 768px) {
+  .main-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .right-panel {
+    width: 100%;
+    max-width: 400px;
+  }
+}
+
+@media (max-width: 400px) {
+  .wordle-cell {
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+  }
+  
+  .word-list {
+    grid-template-columns: 1fr;
+  }
+}
