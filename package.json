@@ -12,7 +12,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy": "npm run build && rsync -avz --delete build/ robteix.com:/data/www/wsolver/"
+    "deploy": "PUBLIC_URL=/wsolver npm run build && rsync -avz --delete build/ robteix.com:/data/www/wsolver/"
   },
   "eslintConfig": {
     "extends": [

@@ -11,8 +11,14 @@ function App() {
   const [rows, setRows] = useState(() => Array(6).fill(null).map(() => createEmptyRow()));
   const [wordList, setWordList] = useState([]);
   const [filteredWords, setFilteredWords] = useState([]);
-  const [useCommonWords, setUseCommonWords] = useState(false);
-  const [wordLimit, setWordLimit] = useState(20);
+  const [useCommonWords, setUseCommonWords] = useState(() => {
+    const saved = localStorage.getItem('wordleSolver_useCommonWords');
+    return saved ? JSON.parse(saved) : false;
+  });
+  const [wordLimit, setWordLimit] = useState(() => {
+    const saved = localStorage.getItem('wordleSolver_wordLimit');
+    return saved ? parseInt(saved) : 20;
+  });
   const [showInstructions, setShowInstructions] = useState(false);
 
   function createEmptyRow() {
@@ -25,7 +31,8 @@ function App() {
   // load wordlist when toggle changes
   useEffect(() => {
     const wordlistFile = useCommonWords ? 'common.txt' : 'wordlist.txt';
-    fetch(`/${wordlistFile}`)
+    const base = process.env.PUBLIC_URL || '';
+    fetch(`${base}/${wordlistFile}`)
       .then(response => response.text())
       .then(text => {
         const words = text.split('\n').filter(word => word.trim().length === 5);
@@ -35,65 +42,110 @@ function App() {
       .catch(error => console.error('Error loading wordlist:', error));
   }, [useCommonWords]);
 
-  // filter words based on current state
+  // save preferences to localStorage
+  useEffect(() => {
+    localStorage.setItem('wordleSolver_useCommonWords', JSON.stringify(useCommonWords));
+  }, [useCommonWords]);
+
+  useEffect(() => {
+    localStorage.setItem('wordleSolver_wordLimit', wordLimit.toString());
+  }, [wordLimit]);
+
+  // filter words based on current state (with duplicate-letter handling)
   useEffect(() => {
     if (wordList.length === 0) return;
-    
-    const filtered = wordList.filter(word => {
-      word = word.toUpperCase();
-      
-      // collect all constraints
-      const greenLetters = {}; // position -> letter
-      const yellowLetters = {}; // letter -> positions where it can't be
-      const grayLetters = new Set();
-      
-      for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
-        const row = rows[rowIndex];
-        const hasLetters = row.some(cell => cell.letter !== '');
-        if (!hasLetters) continue;
-        
-        for (let colIndex = 0; colIndex < 5; colIndex++) {
-          const cell = row[colIndex];
-          if (cell.letter === '') continue;
-          
-          if (cell.state === LETTER_STATES.GREEN) {
-            greenLetters[colIndex] = cell.letter;
-          } else if (cell.state === LETTER_STATES.YELLOW) {
-            if (!yellowLetters[cell.letter]) {
-              yellowLetters[cell.letter] = new Set();
-            }
-            yellowLetters[cell.letter].add(colIndex);
-          } else if (cell.state === LETTER_STATES.GRAY) {
-            grayLetters.add(cell.letter);
-          }
+
+    // Precompute constraints once per filter run
+    const greenLetters = {}; // position -> letter (exact match)
+    const yellowForbidden = {}; // letter -> Set(positions it cannot occupy)
+    const minCount = {}; // letter -> minimum occurrences required
+    const maxCount = {}; // letter -> maximum occurrences allowed (if known)
+
+    // Aggregate constraints from each filled row
+    for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+      const row = rows[rowIndex];
+      const hasLetters = row.some(cell => cell.letter !== '');
+      if (!hasLetters) continue;
+
+      const rowLetterCounts = {}; // letter -> total occurrences in this row
+      const rowNonGrayCounts = {}; // letter -> non-gray occurrences (green+yellow) in this row
+
+      for (let colIndex = 0; colIndex < 5; colIndex++) {
+        const cell = row[colIndex];
+        if (cell.letter === '') continue;
+        const letter = cell.letter.toUpperCase();
+
+        // position constraints
+        if (cell.state === LETTER_STATES.GREEN) {
+          greenLetters[colIndex] = letter;
+        } else if (cell.state === LETTER_STATES.YELLOW) {
+          if (!yellowForbidden[letter]) yellowForbidden[letter] = new Set();
+          yellowForbidden[letter].add(colIndex);
+        }
+
+        // count occurrences in this row
+        rowLetterCounts[letter] = (rowLetterCounts[letter] || 0) + 1;
+        if (cell.state !== LETTER_STATES.GRAY) {
+          rowNonGrayCounts[letter] = (rowNonGrayCounts[letter] || 0) + 1;
         }
       }
-      
-      // check green letters (must be in exact position)
+
+      // derive per-letter bounds from this row
+      for (const letter of Object.keys(rowLetterCounts)) {
+        const k = rowLetterCounts[letter];
+        const m = rowNonGrayCounts[letter] || 0;
+        if (m < k) {
+          // This row proves the answer has exactly m copies of this letter
+          minCount[letter] = Math.max(minCount[letter] || 0, m);
+          const currentMax = maxCount[letter] === undefined ? Infinity : maxCount[letter];
+          maxCount[letter] = Math.min(currentMax, m);
+        } else if (k > 0) {
+          // All occurrences in this row are non-gray: at least k copies
+          minCount[letter] = Math.max(minCount[letter] || 0, k);
+        }
+      }
+    }
+
+    const filtered = wordList.filter(raw => {
+      const word = raw.toUpperCase();
+
+      // Green checks (exact position matches)
       for (const [position, letter] of Object.entries(greenLetters)) {
         if (word[position] !== letter) return false;
       }
-      
-      // check yellow letters (must be in word but not in specified positions)
-      for (const [letter, positions] of Object.entries(yellowLetters)) {
+
+      // Yellow checks (letter present but not in forbidden positions)
+      for (const [letter, positions] of Object.entries(yellowForbidden)) {
         if (!word.includes(letter)) return false;
         for (const position of positions) {
           if (word[position] === letter) return false;
         }
       }
-      
-      // check gray letters (must not be in word, unless they're also green/yellow elsewhere)
-      for (const letter of grayLetters) {
-        // only exclude if the letter isn't required elsewhere
-        if (!greenLetters[Object.keys(greenLetters).find(pos => greenLetters[pos] === letter)] &&
-            !yellowLetters[letter]) {
-          if (word.includes(letter)) return false;
-        }
+
+      // Frequency checks for duplicate letters
+      const freq = {};
+      for (let i = 0; i < word.length; i++) {
+        const ch = word[i];
+        freq[ch] = (freq[ch] || 0) + 1;
       }
-      
+
+      // Build set of letters that have any count constraints
+      const lettersWithConstraints = new Set([
+        ...Object.keys(minCount),
+        ...Object.keys(maxCount)
+      ]);
+
+      for (const letter of lettersWithConstraints) {
+        const c = freq[letter] || 0;
+        const minC = minCount[letter] || 0;
+        const maxC = maxCount[letter];
+        if (c < minC) return false;
+        if (maxC !== undefined && maxC !== Infinity && c > maxC) return false;
+      }
+
       return true;
     });
-    
+
     setFilteredWords(filtered.slice(0, wordLimit));
   }, [rows, wordList, wordLimit]);
 
