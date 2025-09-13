@@ -276,6 +276,34 @@ function App() {
     setRows(newRows);
   };
 
+  // autofill the next available row with a clicked suggestion
+  const handleSuggestionClick = (suggestion) => {
+    const word = suggestion.toUpperCase();
+
+    // find the first row with any empty cell
+    const targetRowIndex = rows.findIndex(row => row.some(cell => cell.letter === ''));
+    if (targetRowIndex === -1) return; // grid full
+
+    const newRows = [...rows];
+    const startCol = newRows[targetRowIndex].findIndex(cell => cell.letter === '');
+
+    for (let i = 0; i < word.length && startCol + i < 5; i++) {
+      const colIndex = startCol + i;
+      const letter = word[i];
+      newRows[targetRowIndex][colIndex].letter = letter;
+
+      // copy prior color if same letter appeared in same position above
+      for (let prevRow = targetRowIndex - 1; prevRow >= 0; prevRow--) {
+        if (rows[prevRow][colIndex].letter === letter) {
+          newRows[targetRowIndex][colIndex].state = rows[prevRow][colIndex].state;
+          break;
+        }
+      }
+    }
+
+    setRows(newRows);
+  };
+
   return (
     <div className="App">
       <div className="header">
@@ -303,6 +331,7 @@ function App() {
             <ul>
               <li>Type letters on your keyboard - they automatically fill the first empty spot</li>
               <li>Press Backspace to delete the last letter entered</li>
+              <li>Click a suggested word to autofill the next row</li>
               <li>On mobile, use the on-screen keyboard at the bottom</li>
             </ul>
             <p><strong>Setting Colors:</strong></p>
@@ -339,7 +368,20 @@ function App() {
           <div className="word-list">
             {filteredWords.length > 0 ? (
               filteredWords.map((word, index) => (
-                <div key={index} className="word-item">
+                <div 
+                  key={index} 
+                  className="word-item"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Autofill ${word.toUpperCase()}`}
+                  onClick={() => handleSuggestionClick(word)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleSuggestionClick(word);
+                    }
+                  }}
+                >
                   {word.toUpperCase().split('').map((letter, letterIndex) => {
                     // determine letter color based on constraints
                     let letterClass = '';
