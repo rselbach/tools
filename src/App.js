@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './App.css';
 
 const LETTER_STATES = {
@@ -24,7 +24,8 @@ function App() {
   function createEmptyRow() {
     return Array(5).fill(null).map(() => ({
       letter: '',
-      state: LETTER_STATES.GRAY
+      state: LETTER_STATES.GRAY,
+      flip: false
     }));
   }
 
@@ -50,6 +51,8 @@ function App() {
   useEffect(() => {
     localStorage.setItem('wordleSolver_wordLimit', wordLimit.toString());
   }, [wordLimit]);
+
+  // no theme toggling; app uses default light theme
 
   // filter words based on current state (with duplicate-letter handling)
   useEffect(() => {
@@ -202,8 +205,22 @@ function App() {
   }, [rows]);
 
   // handle virtual keyboard input
+  const triggerHaptic = (type = 'key') => {
+    try {
+      const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReducedMotion) return;
+      if (navigator.vibrate) {
+        if (type === 'backspace') navigator.vibrate(20);
+        else navigator.vibrate(10);
+      }
+    } catch (_) {
+      // ignore
+    }
+  };
+
   const handleVirtualKeyPress = (key) => {
     if (key === 'BACKSPACE') {
+      triggerHaptic('backspace');
       // handle backspace
       for (let rowIndex = rows.length - 1; rowIndex >= 0; rowIndex--) {
         for (let colIndex = 4; colIndex >= 0; colIndex--) {
@@ -217,6 +234,7 @@ function App() {
         }
       }
     } else {
+      triggerHaptic('key');
       // handle letter input
       for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
         for (let colIndex = 0; colIndex < 5; colIndex++) {
@@ -239,6 +257,78 @@ function App() {
       }
     }
   };
+
+  // derive per-letter keyboard statuses with precedence: green > yellow > gray
+  const computeKeyStatuses = () => {
+    const status = {};
+    for (let r = 0; r < rows.length; r++) {
+      for (let c = 0; c < 5; c++) {
+        const cell = rows[r][c];
+        if (!cell.letter) continue;
+        const L = cell.letter.toUpperCase();
+        if (cell.state === LETTER_STATES.GREEN) {
+          status[L] = 'green';
+        } else if (cell.state === LETTER_STATES.YELLOW) {
+          if (status[L] !== 'green') status[L] = 'yellow';
+        } else if (cell.state === LETTER_STATES.GRAY) {
+          if (status[L] !== 'green' && status[L] !== 'yellow') status[L] = 'gray';
+        }
+      }
+    }
+    return status;
+  };
+
+  const keyStatuses = computeKeyStatuses();
+  
+  // map of letter -> Set of green positions (0-4)
+  const computeGreenPositions = () => {
+    const map = {};
+    for (let r = 0; r < rows.length; r++) {
+      for (let c = 0; c < 5; c++) {
+        const cell = rows[r][c];
+        if (cell.letter && cell.state === LETTER_STATES.GREEN) {
+          const L = cell.letter.toUpperCase();
+          if (!map[L]) map[L] = new Set();
+          map[L].add(c);
+        }
+      }
+    }
+    return map;
+  };
+
+  const greenPositions = computeGreenPositions();
+
+  // map of letter -> Set of positions that are NOT allowed (from YELLOW cells)
+  const computeYellowForbiddenPositions = () => {
+    const map = {};
+    for (let r = 0; r < rows.length; r++) {
+      for (let c = 0; c < 5; c++) {
+        const cell = rows[r][c];
+        if (cell.letter && cell.state === LETTER_STATES.YELLOW) {
+          const L = cell.letter.toUpperCase();
+          if (!map[L]) map[L] = new Set();
+          map[L].add(c);
+        }
+      }
+    }
+    return map;
+  };
+
+  const yellowForbiddenPositions = computeYellowForbiddenPositions();
+
+  // Determine how many rows to show on screen to save space on small devices.
+  // Show at least 1 row; show the next row whenever the current is fully filled; always show rows that have any letters.
+  const visibleRowCount = useMemo(() => {
+    let count = 1;
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      const anyLetters = row.some(cell => cell.letter !== '');
+      const full = row.every(cell => cell.letter !== '');
+      if (anyLetters) count = Math.max(count, i + 1);
+      if (full) count = Math.max(count, i + 2);
+    }
+    return Math.min(count, rows.length);
+  }, [rows]);
 
   const handleCellClick = (rowIndex, colIndex) => {
     // only cycle the state if the cell has a letter
@@ -264,16 +354,42 @@ function App() {
       default:
         nextState = LETTER_STATES.GRAY;
     }
-    
+
+    // Prevent conflicting greens: only one unique letter can be green per column
+    if (nextState === LETTER_STATES.GREEN) {
+      const targetLetter = cell.letter;
+      const conflict = rows.some((r, idx) => idx !== rowIndex && r[colIndex].state === LETTER_STATES.GREEN && r[colIndex].letter !== '' && r[colIndex].letter !== targetLetter);
+      if (conflict) {
+        // skip GREEN and move to GRAY instead (continue cycling)
+        nextState = LETTER_STATES.GRAY;
+      }
+    }
+
     // update this cell and all matching cells (same letter, same position)
     const letter = cell.letter;
+    const changed = [];
     for (let r = 0; r < newRows.length; r++) {
       if (newRows[r][colIndex].letter === letter) {
         newRows[r][colIndex].state = nextState;
+        newRows[r][colIndex].flip = true;
+        changed.push({ r, c: colIndex });
       }
     }
     
     setRows(newRows);
+
+    // remove flip flag after animation so it can retrigger next time
+    setTimeout(() => {
+      setRows(prev => {
+        const reset = [...prev];
+        for (const pos of changed) {
+          if (reset[pos.r] && reset[pos.r][pos.c]) {
+            reset[pos.r][pos.c].flip = false;
+          }
+        }
+        return reset;
+      });
+    }, 650);
   };
 
   // autofill the next available row with a clicked suggestion
@@ -333,6 +449,7 @@ function App() {
               <li>Press Backspace to delete the last letter entered</li>
               <li>Click a suggested word to autofill the next row</li>
               <li>On mobile, use the on-screen keyboard at the bottom</li>
+              <li>Rows appear as you complete words to save space</li>
             </ul>
             <p><strong>Setting Colors:</strong></p>
             <ul>
@@ -340,6 +457,8 @@ function App() {
               <li><span className="gray-example">Gray</span> - Letter not in word</li>
               <li><span className="yellow-example">Yellow</span> - Letter in word, wrong position</li>
               <li><span className="green-example">Green</span> - Letter in correct position</li>
+              <li>The on-screen keyboard reflects known letters (green/yellow/gray)</li>
+              <li>Key markers: filled dot = confirmed green slot; filled yellow dot = slot not allowed</li>
             </ul>
           </div>
         </div>
@@ -348,12 +467,12 @@ function App() {
         <div className="left-panel">
           <h2>Enter Your Guesses</h2>
           <div className="wordle-grid">
-            {rows.map((row, rowIndex) => (
+            {rows.slice(0, visibleRowCount).map((row, rowIndex) => (
               <div key={rowIndex} className="wordle-row">
                 {row.map((cell, colIndex) => (
                   <div
                     key={colIndex}
-                    className={`wordle-cell ${cell.state}`}
+                    className={`wordle-cell ${cell.state} ${cell.flip ? 'flip' : ''}`}
                     onClick={() => handleCellClick(rowIndex, colIndex)}
                   >
                     {cell.letter}
@@ -453,10 +572,20 @@ function App() {
           {['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'].map(letter => (
             <button 
               key={letter} 
-              className="keyboard-key"
+              className={`keyboard-key ${keyStatuses[letter] ? 'key-' + keyStatuses[letter] : ''}`}
               onClick={() => handleVirtualKeyPress(letter)}
             >
               {letter}
+              {(greenPositions[letter]?.size > 0 || yellowForbiddenPositions[letter]?.size > 0) && (
+                <span className="key-markers" aria-hidden="true">
+                  {[0,1,2,3,4].map(pos => (
+                    <span 
+                      key={pos} 
+                      className={`key-dot ${greenPositions[letter]?.has(pos) ? 'active' : ''} ${(!greenPositions[letter]?.has(pos) && yellowForbiddenPositions[letter]?.has(pos)) ? 'yellow' : ''}`}
+                    />
+                  ))}
+                </span>
+              )}
             </button>
           ))}
         </div>
@@ -464,10 +593,20 @@ function App() {
           {['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'].map(letter => (
             <button 
               key={letter} 
-              className="keyboard-key"
+              className={`keyboard-key ${keyStatuses[letter] ? 'key-' + keyStatuses[letter] : ''}`}
               onClick={() => handleVirtualKeyPress(letter)}
             >
               {letter}
+              {(greenPositions[letter]?.size > 0 || yellowForbiddenPositions[letter]?.size > 0) && (
+                <span className="key-markers" aria-hidden="true">
+                  {[0,1,2,3,4].map(pos => (
+                    <span 
+                      key={pos} 
+                      className={`key-dot ${greenPositions[letter]?.has(pos) ? 'active' : ''} ${(!greenPositions[letter]?.has(pos) && yellowForbiddenPositions[letter]?.has(pos)) ? 'yellow' : ''}`}
+                    />
+                  ))}
+                </span>
+              )}
             </button>
           ))}
         </div>
@@ -475,10 +614,20 @@ function App() {
           {['Z', 'X', 'C', 'V', 'B', 'N', 'M'].map(letter => (
             <button 
               key={letter} 
-              className="keyboard-key"
+              className={`keyboard-key ${keyStatuses[letter] ? 'key-' + keyStatuses[letter] : ''}`}
               onClick={() => handleVirtualKeyPress(letter)}
             >
               {letter}
+              {(greenPositions[letter]?.size > 0 || yellowForbiddenPositions[letter]?.size > 0) && (
+                <span className="key-markers" aria-hidden="true">
+                  {[0,1,2,3,4].map(pos => (
+                    <span 
+                      key={pos} 
+                      className={`key-dot ${greenPositions[letter]?.has(pos) ? 'active' : ''} ${(!greenPositions[letter]?.has(pos) && yellowForbiddenPositions[letter]?.has(pos)) ? 'yellow' : ''}`}
+                    />
+                  ))}
+                </span>
+              )}
             </button>
           ))}
           <button 

@@ -1,11 +1,28 @@
+:root {
+  --bg: #f6f7fb;
+  --text: #111827;
+  --muted: #6b7280;
+  --surface: #ffffff;
+  --surface-2: #f3f4f6;
+  --border: #e5e7eb;
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  --accent: #6aaa64; /* green */
+  --accent-2: #c9b458; /* yellow */
+  --accent-3: #787c7e; /* gray */
+}
+
+/* Dark mode removed; single light theme via :root variables */
+
 .App {
   text-align: center;
-  padding: 20px;
+  padding: 24px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   max-width: 1200px;
   margin: 0 auto;
+  color: var(--text);
+  background: var(--bg);
 }
 
 .header {
@@ -13,19 +30,23 @@
   justify-content: center;
   align-items: center;
   position: relative;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 h1 {
-  color: #333;
+  color: var(--text);
   margin: 0;
+  font-size: 28px;
+  letter-spacing: 0.5px;
 }
 
 h2 {
-  color: #333;
-  font-size: 20px;
-  margin: 0 0 15px 0;
+  color: var(--text);
+  font-size: 18px;
+  margin: 0 0 12px 0;
 }
+
+/* removed dark-mode toggle button */
 
 .help-button {
   position: absolute;
@@ -33,8 +54,8 @@ h2 {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #6aaa64;
-  color: white;
+  background: var(--accent);
+  color: #fff;
   border: none;
   font-size: 18px;
   font-weight: bold;
@@ -43,6 +64,7 @@ h2 {
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: var(--shadow);
 }
 
 .help-button:hover {
@@ -60,7 +82,7 @@ h2 {
   gap: 20px;
   margin-top: 15px;
   padding-top: 15px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--border);
   flex-wrap: wrap;
 }
 
@@ -112,7 +134,7 @@ h2 {
 .toggle-label {
   font-size: 14px;
   font-weight: 500;
-  color: #333;
+  color: var(--text);
 }
 
 .instructions-overlay {
@@ -143,7 +165,7 @@ h2 {
 
 .instructions-popup h3 {
   margin: 0 0 15px 0;
-  color: #333;
+  color: var(--text);
   font-size: 22px;
   text-align: center;
 }
@@ -238,6 +260,7 @@ h2 {
   flex-direction: column;
   gap: 5px;
   align-items: center;
+  perspective: 900px;
 }
 
 .wordle-row {
@@ -249,7 +272,7 @@ h2 {
 .wordle-cell {
   width: 60px;
   height: 60px;
-  border: 2px solid #d3d6da;
+  border: 2px solid var(--border);
   font-size: 28px;
   font-weight: bold;
   display: flex;
@@ -257,9 +280,24 @@ h2 {
   justify-content: center;
   text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.2s ease;
-  border-radius: 4px;
+  transition: transform 0.1s ease, background 0.2s ease, border-color 0.2s ease;
+  border-radius: 10px;
   user-select: none;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+.wordle-cell.flip {
+  animation: flip-cell 0.6s ease both;
+}
+
+@keyframes flip-cell {
+  0% { transform: rotateX(0deg); }
+  49% { transform: rotateX(90deg); }
+  51% { transform: rotateX(90deg); }
+  100% { transform: rotateX(0deg); }
 }
 
 
@@ -290,6 +328,11 @@ h2 {
 
 .left-panel {
   flex-shrink: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 16px 20px;
+  box-shadow: var(--shadow);
 }
 
 .left-panel h2 {
@@ -299,6 +342,11 @@ h2 {
 .right-panel {
   min-width: 300px;
   text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: var(--shadow);
 }
 
 
@@ -314,9 +362,9 @@ h2 {
 .word-limit-selector select {
   padding: 4px 8px;
   font-size: 14px;
-  border: 1px solid #d3d6da;
-  border-radius: 4px;
-  background: white;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
   cursor: pointer;
   transition: border-color 0.2s;
 }
@@ -337,26 +385,27 @@ h2 {
   max-height: 500px;
   overflow-y: auto;
   padding: 10px;
-  background: #f5f5f5;
-  border-radius: 8px;
+  background: var(--surface-2);
+  border-radius: 10px;
 }
 
 .word-item {
   padding: 8px 12px;
-  background: white;
-  border-radius: 4px;
-  border: 1px solid #e0e0e0;
+  background: var(--surface);
+  border-radius: 8px;
+  border: 1px solid var(--border);
   font-weight: 600;
   font-size: 14px;
   letter-spacing: 1px;
   text-align: center;
   cursor: pointer;
-  transition: background 0.15s, transform 0.05s, box-shadow 0.15s;
+  transition: background 0.15s, transform 0.05s, box-shadow 0.15s, border-color 0.2s;
+  box-shadow: var(--shadow);
 }
 
 .word-item:hover {
   background: #f9fafb;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  border-color: #d1d5db;
 }
 
 .word-item:active {
@@ -364,7 +413,7 @@ h2 {
 }
 
 .letter-green {
-  background-color: #6aaa64;
+  background-color: var(--accent);
   color: white;
   padding: 2px 4px;
   border-radius: 2px;
@@ -372,7 +421,7 @@ h2 {
 }
 
 .letter-yellow {
-  background-color: #c9b458;
+  background-color: var(--accent-2);
   color: white;
   padding: 2px 4px;
   border-radius: 2px;
@@ -382,7 +431,7 @@ h2 {
 .no-words {
   grid-column: 1 / -1;
   text-align: center;
-  color: #999;
+  color: var(--muted);
   padding: 20px;
 }
 
@@ -405,37 +454,114 @@ h2 {
   bottom: 0;
   left: 0;
   right: 0;
-  background: #f0f0f0;
-  padding: 4px 2px;
-  border-top: 1px solid #d3d6da;
+  background: var(--surface);
+  padding: 8px 6px;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
+  /* Older iOS fallback */
+  padding-bottom: calc(constant(safe-area-inset-bottom, 0px) + 8px);
+  border-top: 1px solid var(--border);
   z-index: 1000;
+  box-shadow: var(--shadow);
 }
 
 .keyboard-row {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 3px;
-  gap: 2px;
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 10), minmax(0, 1fr));
+  margin-bottom: 6px;
+  gap: 4px;
+  padding: 0 6px;
 }
+
+.virtual-keyboard .keyboard-row:nth-child(1) { --cols: 10; }
+.virtual-keyboard .keyboard-row:nth-child(2) { --cols: 9; }
+.virtual-keyboard .keyboard-row:nth-child(3) { --cols: 8; }
 
 .keyboard-row:last-child {
   margin-bottom: 0;
 }
 
 .keyboard-key {
-  flex: 1;
-  max-width: 38px;
-  height: 52px;
-  padding: 0;
-  background: white;
-  border: 1px solid #d3d6da;
-  border-radius: 4px;
+  width: 100%;
+  height: 56px; /* larger touch target */
+  padding: 0 2px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
   font-size: 18px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.1s;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  position: relative;
+  touch-action: manipulation;
+  box-sizing: border-box;
+}
+
+/* Keyboard key statuses */
+.keyboard-key.key-green {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.keyboard-key.key-yellow {
+  background: var(--accent-2);
+  color: #fff;
+  border-color: var(--accent-2);
+}
+
+.keyboard-key.key-gray {
+  background: var(--accent-3);
+  color: #fff;
+  border-color: var(--accent-3);
+}
+
+/* Position markers for known green slots */
+.key-markers {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2px;
+  pointer-events: none;
+}
+
+.key-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  border: 1px solid #cbd5e1; /* slate-300 */
+  background: transparent;
+}
+
+/* Active markers on default (light) keys */
+.keyboard-key:not(.key-green):not(.key-yellow):not(.key-gray) .key-dot.active {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Active markers on colored keys use white for contrast */
+.keyboard-key.key-green .key-dot.active,
+.keyboard-key.key-yellow .key-dot.active,
+.keyboard-key.key-gray .key-dot.active {
+  background: #fff;
+  border-color: #fff;
+}
+
+/* Yellow (not-allowed positions) as filled dots */
+.key-dot.yellow {
+  border-color: var(--accent-2);
+  background: var(--accent-2);
+}
+
+/* Ensure visibility on colored keys */
+.keyboard-key.key-green .key-dot.yellow,
+.keyboard-key.key-yellow .key-dot.yellow,
+.keyboard-key.key-gray .key-dot.yellow {
+  background: #fde68a; /* softer yellow for contrast */
+  border-color: #fde68a;
 }
 
 .keyboard-key:active {
@@ -444,10 +570,9 @@ h2 {
 }
 
 .keyboard-backspace {
-  max-width: 55px;
-  background: #ff6b6b;
+  background: #ef4444;
   color: white;
-  border-color: #ff5252;
+  border-color: #dc2626;
   font-size: 22px;
 }
 
@@ -462,7 +587,7 @@ h2 {
   }
   
   .App {
-    padding-bottom: 175px; /* make room for keyboard */
+    padding-bottom: calc(210px + env(safe-area-inset-bottom, 0px)); /* room for keyboard */
   }
 }
 
@@ -478,19 +603,15 @@ h2 {
   }
   
   .keyboard-key {
-    max-width: 35px;
-    height: 48px;
-    font-size: 16px;
-    padding: 0;
+    height: 54px;
+    font-size: 18px;
+    padding: 0 2px;
   }
   
-  .keyboard-row {
-    gap: 2px;
-    margin-bottom: 2px;
-  }
+  .keyboard-row { gap: 4px; margin-bottom: 4px; }
   
   .keyboard-backspace {
-    max-width: 50px;
-    font-size: 20px;
+    min-width: 60px;
+    font-size: 22px;
   }
 }
