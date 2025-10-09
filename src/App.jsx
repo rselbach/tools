@@ -13,7 +13,7 @@ function App() {
   const [filteredWords, setFilteredWords] = useState([]);
   const [useCommonWords, setUseCommonWords] = useState(() => {
     const saved = localStorage.getItem('wordleSolver_useCommonWords');
-    return saved ? JSON.parse(saved) : false;
+    return saved ? JSON.parse(saved) : true;
   });
   const [wordLimit, setWordLimit] = useState(() => {
     const saved = localStorage.getItem('wordleSolver_wordLimit');
@@ -32,10 +32,11 @@ function App() {
   // load wordlist when toggle changes
   useEffect(() => {
     const wordlistFile = useCommonWords ? 'common.txt' : 'wordlist.txt';
-    const base = process.env.PUBLIC_URL || '';
-    fetch(`${base}/${wordlistFile}`)
+    const base = import.meta.env.BASE_URL || '';
+    fetch(`${base}${wordlistFile}`)
       .then(response => response.text())
       .then(text => {
+
         const words = text.split('\n').filter(word => word.trim().length === 5);
         setWordList(words);
         setFilteredWords(words.slice(0, wordLimit));
