@@ -343,15 +343,20 @@ header {
 /* Footer */
 footer {
     text-align: center;
-    padding-top: 2rem;
+    padding-top: 1.5rem;
     margin-top: 2rem;
     border-top: 1px solid var(--border);
+}
+
+footer p {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    margin: 0.25rem 0;
 }
 
 footer a {
     color: var(--text-muted);
     text-decoration: none;
-    font-size: 0.875rem;
 }
 
 footer a:hover {

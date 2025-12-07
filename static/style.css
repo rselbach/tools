@@ -1,32 +1,28 @@
 /* Roberto's Toolset - Stylesheet */
 
 :root {
-    /* Light mode (default) */
-    --bg-primary: #fafafa;
-    --bg-secondary: #ffffff;
-    --text-primary: #1a1a2e;
-    --text-secondary: #4a4a68;
-    --text-muted: #8888a0;
+    /* Dark theme (default) - matches codeshot/jwtviewer/wsolver */
+    --bg-primary: #0f0f1a;
+    --bg-secondary: #1a1a2e;
+    --text-primary: #f0f0f5;
+    --text-secondary: #b0b0c0;
+    --text-muted: #6a6a80;
     --accent: #6366f1;
-    --accent-hover: #4f46e5;
-    --border: #e5e5ed;
-    --shadow: rgba(0, 0, 0, 0.06);
-    --shadow-hover: rgba(0, 0, 0, 0.1);
+    --accent-hover: #818cf8;
+    --border: #2a2a40;
+    --shadow: rgba(0, 0, 0, 0.3);
+    --shadow-hover: rgba(0, 0, 0, 0.5);
 }
 
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg-primary: #0f0f1a;
-        --bg-secondary: #1a1a2e;
-        --text-primary: #f0f0f5;
-        --text-secondary: #b0b0c0;
-        --text-muted: #6a6a80;
-        --accent: #818cf8;
-        --accent-hover: #a5b4fc;
-        --border: #2a2a40;
-        --shadow: rgba(0, 0, 0, 0.3);
-        --shadow-hover: rgba(0, 0, 0, 0.5);
-    }
+[data-theme="light"] {
+    --bg-primary: #f8fafc;
+    --bg-secondary: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --border: #e2e8f0;
+    --shadow: rgba(0, 0, 0, 0.06);
+    --shadow-hover: rgba(0, 0, 0, 0.1);
 }
 
 * {
@@ -53,7 +49,7 @@ body {
 .container {
     max-width: 700px;
     margin: 0 auto;
-    padding: 3rem 1.5rem;
+    padding: 2rem 1.5rem;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -63,35 +59,79 @@ body {
 header {
     position: relative;
     text-align: center;
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
 }
 
-.github-link {
+/* Header actions (github + theme toggle) */
+.header-actions {
     position: absolute;
     top: 0;
     right: 0;
-    color: var(--text-muted);
-    transition: color 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.github-link {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.5rem;
+    color: var(--text-primary);
+    transition: border-color 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .github-link:hover {
-    color: var(--text-primary);
+    border-color: var(--accent);
 }
 
 .github-link svg {
     display: block;
 }
 
+/* Theme toggle */
+.theme-toggle {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.5rem;
+    cursor: pointer;
+    color: var(--text-primary);
+    transition: border-color 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-toggle:hover {
+    border-color: var(--accent);
+}
+
+.icon-moon {
+    display: none;
+}
+
+[data-theme="light"] .icon-sun {
+    display: none;
+}
+
+[data-theme="light"] .icon-moon {
+    display: block;
+}
+
 header h1 {
-    font-size: 2.25rem;
+    font-size: 2rem;
     font-weight: 700;
     letter-spacing: -0.02em;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
 }
 
 .tagline {
     color: var(--text-secondary);
-    font-size: 1.1rem;
+    font-size: 1rem;
 }
 
 /* Main content */
@@ -119,12 +159,12 @@ main {
     text-decoration: none;
     color: inherit;
     transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
-    box-shadow: 0 2px 8px var(--shadow);
+    box-shadow: 0 4px 12px var(--shadow);
 }
 
 .tool-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px var(--shadow-hover);
+    box-shadow: 0 8px 24px var(--shadow-hover);
     border-color: var(--accent);
 }
 
@@ -155,7 +195,7 @@ main {
 }
 
 .tool-description {
-    font-size: 0.95rem;
+    font-size: 0.875rem;
     color: var(--text-secondary);
     line-height: 1.5;
 }
@@ -164,15 +204,15 @@ main {
 .empty-state {
     text-align: center;
     color: var(--text-muted);
-    font-size: 1.1rem;
+    font-size: 1rem;
     padding: 4rem 1rem;
 }
 
 /* Footer */
 footer {
-    margin-top: 4rem;
+    margin-top: 3rem;
     text-align: center;
-    padding-top: 2rem;
+    padding-top: 1.5rem;
     border-top: 1px solid var(--border);
 }
 
@@ -184,15 +224,15 @@ footer p {
 /* Responsive adjustments */
 @media (max-width: 480px) {
     .container {
-        padding: 2rem 1rem;
+        padding: 1.5rem 1rem;
     }
 
     header h1 {
-        font-size: 1.75rem;
+        font-size: 1.5rem;
     }
 
     .tagline {
-        font-size: 1rem;
+        font-size: 0.875rem;
     }
 
     .tool-card {
@@ -208,6 +248,6 @@ footer p {
     }
 
     .tool-description {
-        font-size: 0.9rem;
+        font-size: 0.8rem;
     }
 }
