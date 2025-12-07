@@ -624,6 +624,9 @@
 
         // initial highlight
         highlightCode();
+
+        // focus the code input
+        elements.codeInput.focus();
     }
 
     // wait for DOM and Prism to be ready
