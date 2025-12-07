@@ -159,8 +159,9 @@
 
     /**
      * Update code highlighting
+     * @param {boolean} autoFit - if true, auto-fit width after highlighting
      */
-    function highlightCode() {
+    function highlightCode(autoFit) {
         const code = elements.codeInput.value;
         const language = settings.language;
 
@@ -174,10 +175,15 @@
         elements.codeHighlighted.textContent = code;
         elements.codeHighlighted.className = `language-${language}`;
 
-        // trigger prism highlighting
-        Prism.highlightElement(elements.codeHighlighted);
+        // trigger prism highlighting with async callback for autoloaded languages
+        Prism.highlightElement(elements.codeHighlighted, false, function() {
+            syncEditorHeight();
+            if (autoFit) {
+                autoFitWidth();
+            }
+        });
 
-        // sync textarea height with pre
+        // also sync immediately for already-loaded languages
         syncEditorHeight();
     }
 
@@ -190,6 +196,66 @@
         const height = elements.codeOutput.scrollHeight;
         elements.codeOutput.style.height = height + 'px';
         elements.codeInput.style.height = height + 'px';
+    }
+
+    /**
+     * Remove common leading indentation from code
+     */
+    function dedentCode() {
+        const code = elements.codeInput.value;
+        if (!code) return;
+
+        const lines = code.split('\n');
+        
+        // find minimum indentation (ignoring empty lines)
+        let minIndent = Infinity;
+        for (const line of lines) {
+            if (line.trim().length === 0) continue; // skip empty lines
+            const match = line.match(/^(\s*)/);
+            if (match) {
+                minIndent = Math.min(minIndent, match[1].length);
+            }
+        }
+
+        // if no common indentation found, do nothing
+        if (minIndent === 0 || minIndent === Infinity) return;
+
+        // remove the common indentation from all lines
+        const dedentedLines = lines.map(line => {
+            if (line.trim().length === 0) return line; // preserve empty lines
+            return line.slice(minIndent);
+        });
+
+        elements.codeInput.value = dedentedLines.join('\n');
+    }
+
+    /**
+     * Auto-fit window width to content
+     */
+    function autoFitWidth() {
+        const code = elements.codeInput.value;
+        if (!code) return;
+
+        // temporarily expand window to measure natural content width
+        const originalWidth = elements.window.style.width;
+        elements.window.style.width = '2000px';
+
+        // force reflow so measurements are accurate
+        void elements.codeOutput.offsetWidth;
+
+        // measure the actual scrollWidth of the pre element (includes padding)
+        const preScrollWidth = elements.codeOutput.scrollWidth;
+
+        // pre element scrollWidth should include its own padding
+        // add buffer to account for scrollbar cascade (horizontal scrollbar triggers vertical)
+        const minWidth = 300;
+        const maxWidth = 900;
+        const buffer = 32;
+        const newWidth = Math.min(maxWidth, Math.max(minWidth, preScrollWidth + buffer));
+
+        elements.window.style.width = newWidth + 'px';
+        settings.windowWidth = newWidth;
+        saveSettings();
     }
 
     /**
@@ -387,6 +453,27 @@
         // code input
         elements.codeInput.addEventListener('input', () => {
             highlightCode();
+        });
+
+        // auto-dedent and auto-fit width on paste
+        elements.codeInput.addEventListener('paste', (e) => {
+            // prevent default paste, handle manually
+            e.preventDefault();
+            
+            const pastedText = e.clipboardData.getData('text');
+            const textarea = elements.codeInput;
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const before = textarea.value.substring(0, start);
+            const after = textarea.value.substring(end);
+            
+            // insert pasted text
+            textarea.value = before + pastedText + after;
+            textarea.selectionStart = textarea.selectionEnd = start + pastedText.length;
+            
+            // dedent and highlight (autoFitWidth called after highlight completes)
+            dedentCode();
+            highlightCode(true); // pass flag to auto-fit after
         });
 
         // sync scroll between textarea and pre
