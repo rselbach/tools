@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to JPEG - Convert PNG/WebP to JPEG</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-row">
+                <div class="header-content">
+                    <h1>Image to JPEG</h1>
+                    <p class="tagline">Convert PNG and WebP images to JPEG instantly</p>
+                </div>
+                <button class="theme-toggle" id="theme-toggle" title="Toggle theme">
+                    <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="quality-control">
+            <label for="quality-slider">JPEG Quality: <span id="quality-value">92</span>%</label>
+            <input type="range" id="quality-slider" min="10" max="100" value="92">
+        </div>
+
+        <div class="drop-zone" id="drop-zone">
+            <input type="file" id="file-input" accept="image/png,image/webp" multiple hidden>
+            <div class="drop-zone-content">
+                <svg class="drop-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                <p class="drop-text">Drop PNG or WebP images here</p>
+                <p class="drop-subtext">or click to select files</p>
+            </div>
+        </div>
+
+        <div id="results" class="results hidden"></div>
+
+        <footer>
+            <p>&copy; Roberto Selbach</p>
+            <p>Image to JPEG is part of <a href="/">Roberto's Toolset</a></p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
