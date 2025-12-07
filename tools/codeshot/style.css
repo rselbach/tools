@@ -121,6 +121,217 @@ header h1 {
     accent-color: var(--accent);
 }
 
+/* Custom select dropdown */
+.custom-select {
+    position: relative;
+    min-width: 160px;
+}
+
+.custom-select-trigger {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-primary);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+}
+
+.custom-select-trigger:hover {
+    border-color: var(--accent);
+}
+
+.custom-select.open .custom-select-trigger {
+    border-color: var(--accent);
+}
+
+.custom-select-trigger i {
+    font-size: 1rem;
+    width: 1rem;
+    text-align: center;
+}
+
+.custom-select-trigger .trigger-text {
+    flex: 1;
+}
+
+.custom-select-trigger .chevron {
+    transition: transform 0.15s ease;
+}
+
+.custom-select.open .custom-select-trigger .chevron {
+    transform: rotate(180deg);
+}
+
+.custom-select-options {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    max-height: 280px;
+    overflow-y: auto;
+    z-index: 100;
+    display: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.custom-select.open .custom-select-options {
+    display: block;
+}
+
+.custom-select-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    transition: background 0.1s ease;
+}
+
+.custom-select-option:hover {
+    background: var(--bg-secondary);
+}
+
+.custom-select-option.selected {
+    background: var(--accent);
+    color: white;
+}
+
+.custom-select-option i {
+    font-size: 1rem;
+    width: 1rem;
+    text-align: center;
+}
+
+.custom-select-option.selected i {
+    filter: brightness(0) invert(1);
+}
+
+/* Plain text icon placeholder */
+.devicon-plain::before {
+    content: "¶";
+    font-family: inherit;
+    opacity: 0.5;
+}
+
+/* Theme icons */
+.theme-icon {
+    font-size: 1rem;
+    width: 1rem;
+    text-align: center;
+}
+
+/* Color swatches */
+.color-swatch {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.color-swatch-transparent {
+    background: repeating-conic-gradient(#808080 0% 25%, #fff 0% 50%) 50% / 8px 8px;
+}
+
+.color-swatch-custom {
+    border-radius: 50%;
+}
+
+/* Section headers in dropdown */
+.custom-select-section {
+    padding: 0.5rem 0.75rem 0.25rem;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.custom-select-section:not(:first-child) {
+    margin-top: 0.25rem;
+    border-top: 1px solid var(--border);
+    padding-top: 0.5rem;
+}
+
+/* Wider dropdown for background */
+.custom-select-wide {
+    min-width: 180px;
+}
+
+/* Hidden color picker (triggered by custom option) */
+.hidden-color-picker {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    height: 0;
+}
+
+/* Toggle switches */
+.toggle-wrapper {
+    display: flex;
+    align-items: center;
+    height: 38px; /* match dropdown height */
+}
+
+.toggle {
+    position: relative;
+    width: 40px;
+    height: 22px;
+}
+
+/* Slider wrapper */
+.slider-wrapper {
+    display: flex;
+    align-items: center;
+    height: 38px; /* match dropdown height */
+}
+
+.toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--border);
+    transition: 0.2s;
+    border-radius: 22px;
+}
+
+.toggle-slider::before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.2s;
+    border-radius: 50%;
+}
+
+.toggle input:checked + .toggle-slider {
+    background-color: var(--accent);
+}
+
+.toggle input:checked + .toggle-slider::before {
+    transform: translateX(18px);
+}
+
 /* Preview container */
 .preview-container {
     margin-bottom: 1.5rem;

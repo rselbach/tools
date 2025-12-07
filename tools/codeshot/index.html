@@ -17,6 +17,9 @@
     <!-- Prism line numbers plugin CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
 
+    <!-- Devicons for language logos -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
+
     <!-- Our styles -->
     <link rel="stylesheet" href="style.css">
 </head>
@@ -30,80 +33,169 @@
         <div class="controls">
             <div class="control-row">
                 <div class="control-group">
-                    <label for="language">Language</label>
-                    <select id="language">
-                        <option value="plaintext">Plain Text</option>
-                        <option value="bash">Bash</option>
-                        <option value="c">C</option>
-                        <option value="cpp">C++</option>
-                        <option value="csharp">C#</option>
-                        <option value="css">CSS</option>
-                        <option value="go">Go</option>
-                        <option value="html">HTML</option>
-                        <option value="java">Java</option>
-                        <option value="javascript" selected>JavaScript</option>
-                        <option value="json">JSON</option>
-                        <option value="kotlin">Kotlin</option>
-                        <option value="markdown">Markdown</option>
-                        <option value="php">PHP</option>
-                        <option value="python">Python</option>
-                        <option value="ruby">Ruby</option>
-                        <option value="rust">Rust</option>
-                        <option value="sql">SQL</option>
-                        <option value="swift">Swift</option>
-                        <option value="typescript">TypeScript</option>
-                        <option value="yaml">YAML</option>
-                    </select>
+                    <label>Language</label>
+                    <div class="custom-select" id="language-select">
+                        <div class="custom-select-trigger" id="language-trigger">
+                            <i class="devicon-javascript-plain colored"></i>
+                            <span class="trigger-text">JavaScript</span>
+                            <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                        <div class="custom-select-options" id="language-options">
+                            <div class="custom-select-option" data-value="plaintext">
+                                <i class="devicon-plain"></i><span>Plain Text</span>
+                            </div>
+                            <div class="custom-select-option" data-value="bash">
+                                <i class="devicon-bash-plain colored"></i><span>Bash</span>
+                            </div>
+                            <div class="custom-select-option" data-value="c">
+                                <i class="devicon-c-plain colored"></i><span>C</span>
+                            </div>
+                            <div class="custom-select-option" data-value="cpp">
+                                <i class="devicon-cplusplus-plain colored"></i><span>C++</span>
+                            </div>
+                            <div class="custom-select-option" data-value="csharp">
+                                <i class="devicon-csharp-plain colored"></i><span>C#</span>
+                            </div>
+                            <div class="custom-select-option" data-value="css">
+                                <i class="devicon-css3-plain colored"></i><span>CSS</span>
+                            </div>
+                            <div class="custom-select-option" data-value="go">
+                                <i class="devicon-go-plain colored"></i><span>Go</span>
+                            </div>
+                            <div class="custom-select-option" data-value="html">
+                                <i class="devicon-html5-plain colored"></i><span>HTML</span>
+                            </div>
+                            <div class="custom-select-option" data-value="java">
+                                <i class="devicon-java-plain colored"></i><span>Java</span>
+                            </div>
+                            <div class="custom-select-option selected" data-value="javascript">
+                                <i class="devicon-javascript-plain colored"></i><span>JavaScript</span>
+                            </div>
+                            <div class="custom-select-option" data-value="json">
+                                <i class="devicon-json-plain colored"></i><span>JSON</span>
+                            </div>
+                            <div class="custom-select-option" data-value="kotlin">
+                                <i class="devicon-kotlin-plain colored"></i><span>Kotlin</span>
+                            </div>
+                            <div class="custom-select-option" data-value="markdown">
+                                <i class="devicon-markdown-original"></i><span>Markdown</span>
+                            </div>
+                            <div class="custom-select-option" data-value="php">
+                                <i class="devicon-php-plain colored"></i><span>PHP</span>
+                            </div>
+                            <div class="custom-select-option" data-value="python">
+                                <i class="devicon-python-plain colored"></i><span>Python</span>
+                            </div>
+                            <div class="custom-select-option" data-value="ruby">
+                                <i class="devicon-ruby-plain colored"></i><span>Ruby</span>
+                            </div>
+                            <div class="custom-select-option" data-value="rust">
+                                <i class="devicon-rust-original"></i><span>Rust</span>
+                            </div>
+                            <div class="custom-select-option" data-value="sql">
+                                <i class="devicon-azuresqldatabase-plain colored"></i><span>SQL</span>
+                            </div>
+                            <div class="custom-select-option" data-value="swift">
+                                <i class="devicon-swift-plain colored"></i><span>Swift</span>
+                            </div>
+                            <div class="custom-select-option" data-value="typescript">
+                                <i class="devicon-typescript-plain colored"></i><span>TypeScript</span>
+                            </div>
+                            <div class="custom-select-option" data-value="yaml">
+                                <i class="devicon-yaml-plain colored"></i><span>YAML</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="control-group">
-                    <label for="theme">Theme</label>
-                    <select id="theme">
-                        <option value="dark" selected>Dark</option>
-                        <option value="light">Light</option>
-                    </select>
+                    <label>Background</label>
+                    <div class="custom-select custom-select-wide" id="background-select">
+                        <div class="custom-select-trigger" id="background-trigger">
+                            <span class="color-swatch" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></span>
+                            <span class="trigger-text">Purple Haze</span>
+                            <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                        <div class="custom-select-options" id="background-options">
+                            <div class="custom-select-section">Gradients</div>
+                            <div class="custom-select-option selected" data-value="gradient:linear-gradient(135deg, #667eea 0%, #764ba2 100%)" data-label="Purple Haze">
+                                <span class="color-swatch" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></span><span>Purple Haze</span>
+                            </div>
+                            <div class="custom-select-option" data-value="gradient:linear-gradient(135deg, #f093fb 0%, #f5576c 100%)" data-label="Pink Sunset">
+                                <span class="color-swatch" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></span><span>Pink Sunset</span>
+                            </div>
+                            <div class="custom-select-option" data-value="gradient:linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)" data-label="Ocean Blue">
+                                <span class="color-swatch" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"></span><span>Ocean Blue</span>
+                            </div>
+                            <div class="custom-select-option" data-value="gradient:linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)" data-label="Mint Fresh">
+                                <span class="color-swatch" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);"></span><span>Mint Fresh</span>
+                            </div>
+                            <div class="custom-select-option" data-value="gradient:linear-gradient(135deg, #fa709a 0%, #fee140 100%)" data-label="Warm Flame">
+                                <span class="color-swatch" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);"></span><span>Warm Flame</span>
+                            </div>
+                            <div class="custom-select-option" data-value="gradient:linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)" data-label="Soft Pastel">
+                                <span class="color-swatch" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);"></span><span>Soft Pastel</span>
+                            </div>
+                            <div class="custom-select-option" data-value="gradient:linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)" data-label="Lavender">
+                                <span class="color-swatch" style="background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);"></span><span>Lavender</span>
+                            </div>
+                            <div class="custom-select-option" data-value="gradient:linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)" data-label="Deep Blue">
+                                <span class="color-swatch" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);"></span><span>Deep Blue</span>
+                            </div>
+                            <div class="custom-select-section">Solid Colors</div>
+                            <div class="custom-select-option" data-value="solid:#667eea" data-label="Indigo">
+                                <span class="color-swatch" style="background: #667eea;"></span><span>Indigo</span>
+                            </div>
+                            <div class="custom-select-option" data-value="solid:#1e1e2e" data-label="Dark Gray">
+                                <span class="color-swatch" style="background: #1e1e2e;"></span><span>Dark Gray</span>
+                            </div>
+                            <div class="custom-select-option" data-value="solid:#0f172a" data-label="Slate">
+                                <span class="color-swatch" style="background: #0f172a;"></span><span>Slate</span>
+                            </div>
+                            <div class="custom-select-option" data-value="solid:#fff" data-label="White">
+                                <span class="color-swatch" style="background: #fff; border: 1px solid var(--border);"></span><span>White</span>
+                            </div>
+                            <div class="custom-select-option" data-value="solid:custom" data-label="Custom Color">
+                                <span class="color-swatch color-swatch-custom" style="background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);"></span><span>Custom...</span>
+                            </div>
+                            <div class="custom-select-section">Other</div>
+                            <div class="custom-select-option" data-value="transparent" data-label="Transparent">
+                                <span class="color-swatch color-swatch-transparent"></span><span>Transparent</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="color" id="background-color" value="#667eea" class="hidden-color-picker">
                 </div>
 
                 <div class="control-group">
-                    <label for="line-numbers">
-                        <input type="checkbox" id="line-numbers">
-                        Line Numbers
-                    </label>
-                </div>
-            </div>
-
-            <div class="control-row">
-                <div class="control-group">
-                    <label for="background-type">Background</label>
-                    <select id="background-type">
-                        <option value="solid">Solid Color</option>
-                        <option value="gradient" selected>Gradient</option>
-                        <option value="transparent">Transparent</option>
-                    </select>
-                </div>
-
-                <div class="control-group" id="color-picker-group">
-                    <label for="background-color">Color</label>
-                    <input type="color" id="background-color" value="#667eea">
-                </div>
-
-                <div class="control-group" id="gradient-picker-group">
-                    <label for="gradient-preset">Preset</label>
-                    <select id="gradient-preset">
-                        <option value="linear-gradient(135deg, #667eea 0%, #764ba2 100%)">Purple Haze</option>
-                        <option value="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)">Pink Sunset</option>
-                        <option value="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)">Ocean Blue</option>
-                        <option value="linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)">Mint Fresh</option>
-                        <option value="linear-gradient(135deg, #fa709a 0%, #fee140 100%)">Warm Flame</option>
-                        <option value="linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)">Soft Pastel</option>
-                        <option value="linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)">Lavender</option>
-                        <option value="linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)">Deep Blue</option>
-                    </select>
+                    <label>Dark Mode</label>
+                    <div class="toggle-wrapper">
+                        <div class="toggle">
+                            <input type="checkbox" id="theme-checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="control-group">
-                    <label for="padding">Padding: <span id="padding-value">32</span>px</label>
-                    <input type="range" id="padding" min="16" max="64" value="32">
+                    <label>Line Numbers</label>
+                    <div class="toggle-wrapper">
+                        <div class="toggle">
+                            <input type="checkbox" id="line-numbers">
+                            <span class="toggle-slider"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Padding: <span id="padding-value">32</span>px</label>
+                    <div class="slider-wrapper">
+                        <input type="range" id="padding" min="16" max="64" value="32">
+                    </div>
                 </div>
             </div>
         </div>

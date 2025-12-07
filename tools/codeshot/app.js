@@ -10,14 +10,19 @@
         codeInput: document.getElementById('code-input'),
         codeOutput: document.getElementById('code-output'),
         codeHighlighted: document.getElementById('code-highlighted'),
-        language: document.getElementById('language'),
-        theme: document.getElementById('theme'),
-        lineNumbers: document.getElementById('line-numbers'),
-        backgroundType: document.getElementById('background-type'),
+        // language dropdown
+        languageSelect: document.getElementById('language-select'),
+        languageTrigger: document.getElementById('language-trigger'),
+        languageOptions: document.getElementById('language-options'),
+        // theme toggle
+        themeCheckbox: document.getElementById('theme-checkbox'),
+        // background dropdown
+        backgroundSelect: document.getElementById('background-select'),
+        backgroundTrigger: document.getElementById('background-trigger'),
+        backgroundOptions: document.getElementById('background-options'),
         backgroundColor: document.getElementById('background-color'),
-        gradientPreset: document.getElementById('gradient-preset'),
-        colorPickerGroup: document.getElementById('color-picker-group'),
-        gradientPickerGroup: document.getElementById('gradient-picker-group'),
+        // other controls
+        lineNumbers: document.getElementById('line-numbers'),
         padding: document.getElementById('padding'),
         paddingValue: document.getElementById('padding-value'),
         previewContainer: document.getElementById('preview-container'),
@@ -36,9 +41,8 @@
         language: 'javascript',
         theme: 'dark',
         lineNumbers: false,
-        backgroundType: 'gradient',
-        backgroundColor: '#667eea',
-        gradientPreset: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        // background stored as "type:value" e.g. "gradient:linear-gradient(...)" or "solid:#fff" or "transparent"
+        background: 'gradient:linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         padding: 32,
         windowWidth: 600,
         windowHeight: null, // auto
@@ -76,12 +80,10 @@
      * Apply settings to UI
      */
     function applySettings() {
-        elements.language.value = settings.language;
-        elements.theme.value = settings.theme;
+        updateLanguageSelect(settings.language);
+        elements.themeCheckbox.checked = settings.theme === 'dark';
+        updateBackgroundSelect(settings.background);
         elements.lineNumbers.checked = settings.lineNumbers;
-        elements.backgroundType.value = settings.backgroundType;
-        elements.backgroundColor.value = settings.backgroundColor;
-        elements.gradientPreset.value = settings.gradientPreset;
         elements.padding.value = settings.padding;
         elements.paddingValue.textContent = settings.padding;
 
@@ -93,6 +95,66 @@
         updateBackground();
         updateLineNumbers();
         highlightCode();
+    }
+
+    /**
+     * Update custom language select display
+     */
+    function updateLanguageSelect(value) {
+        updateCustomSelect(elements.languageOptions, elements.languageTrigger, value, 'i');
+    }
+
+    /**
+     * Update custom background select display
+     */
+    function updateBackgroundSelect(value) {
+        // update selected state in options
+        const options = elements.backgroundOptions.querySelectorAll('.custom-select-option');
+        options.forEach(opt => {
+            opt.classList.toggle('selected', opt.dataset.value === value);
+        });
+
+        // update trigger display
+        let selectedOption = elements.backgroundOptions.querySelector(`[data-value="${value}"]`);
+        
+        // handle custom solid colors
+        if (!selectedOption && value.startsWith('solid:')) {
+            selectedOption = elements.backgroundOptions.querySelector('[data-value="solid:custom"]');
+        }
+
+        if (selectedOption) {
+            const swatch = selectedOption.querySelector('.color-swatch').cloneNode(true);
+            const text = selectedOption.dataset.label || selectedOption.querySelector('span').textContent;
+            
+            // for custom colors, update the swatch color
+            if (value.startsWith('solid:') && value !== 'solid:custom') {
+                const color = value.replace('solid:', '');
+                swatch.style.background = color;
+            }
+            
+            elements.backgroundTrigger.querySelector('.color-swatch').replaceWith(swatch);
+            elements.backgroundTrigger.querySelector('.trigger-text').textContent = text;
+        }
+    }
+
+    /**
+     * Generic custom select updater
+     */
+    function updateCustomSelect(optionsEl, triggerEl, value, iconSelector) {
+        // update selected state in options
+        const options = optionsEl.querySelectorAll('.custom-select-option');
+        options.forEach(opt => {
+            opt.classList.toggle('selected', opt.dataset.value === value);
+        });
+
+        // update trigger display
+        const selectedOption = optionsEl.querySelector(`[data-value="${value}"]`);
+        if (selectedOption) {
+            const icon = selectedOption.querySelector(iconSelector).cloneNode(true);
+            const text = selectedOption.querySelector('span').textContent;
+            triggerEl.querySelector(iconSelector).replaceWith(icon);
+            triggerEl.querySelector('.trigger-text').textContent = text;
+        }
     }
 
     /**
@@ -149,25 +211,16 @@
      */
     function updateBackground() {
         const bg = elements.previewBackground;
-
         bg.classList.remove('transparent');
 
-        switch (settings.backgroundType) {
-            case 'solid':
-                bg.style.background = settings.backgroundColor;
-                elements.colorPickerGroup.classList.remove('hidden');
-                elements.gradientPickerGroup.classList.add('hidden');
-                break;
-            case 'gradient':
-                bg.style.background = settings.gradientPreset;
-                elements.colorPickerGroup.classList.add('hidden');
-                elements.gradientPickerGroup.classList.remove('hidden');
-                break;
-            case 'transparent':
-                bg.classList.add('transparent');
-                elements.colorPickerGroup.classList.add('hidden');
-                elements.gradientPickerGroup.classList.add('hidden');
-                break;
+        if (settings.background === 'transparent') {
+            bg.classList.add('transparent');
+            bg.style.background = '';
+        } else if (settings.background.startsWith('gradient:')) {
+            bg.style.background = settings.background.replace('gradient:', '');
+        } else if (settings.background.startsWith('solid:')) {
+            const color = settings.background.replace('solid:', '');
+            bg.style.background = color;
         }
 
         bg.style.padding = settings.padding + 'px';
@@ -320,6 +373,14 @@
     }
 
     /**
+     * Close all custom dropdowns
+     */
+    function closeAllDropdowns() {
+        elements.languageSelect.classList.remove('open');
+        elements.backgroundSelect.classList.remove('open');
+    }
+
+    /**
      * Initialize event listeners
      */
     function initEventListeners() {
@@ -334,18 +395,69 @@
             elements.codeOutput.scrollLeft = elements.codeInput.scrollLeft;
         });
 
-        // language change
-        elements.language.addEventListener('change', (e) => {
-            settings.language = e.target.value;
-            saveSettings();
-            highlightCode();
+        // custom language dropdown
+        elements.languageTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeAllDropdowns();
+            elements.languageSelect.classList.toggle('open');
         });
 
-        // theme change
-        elements.theme.addEventListener('change', (e) => {
-            settings.theme = e.target.value;
+        elements.languageOptions.addEventListener('click', (e) => {
+            const option = e.target.closest('.custom-select-option');
+            if (option) {
+                settings.language = option.dataset.value;
+                updateLanguageSelect(settings.language);
+                elements.languageSelect.classList.remove('open');
+                saveSettings();
+                highlightCode();
+            }
+        });
+
+        // theme toggle
+        elements.themeCheckbox.addEventListener('change', (e) => {
+            settings.theme = e.target.checked ? 'dark' : 'light';
             saveSettings();
             updateTheme();
+        });
+
+        // custom background dropdown
+        elements.backgroundTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeAllDropdowns();
+            elements.backgroundSelect.classList.toggle('open');
+        });
+
+        elements.backgroundOptions.addEventListener('click', (e) => {
+            const option = e.target.closest('.custom-select-option');
+            if (option) {
+                const value = option.dataset.value;
+                
+                // handle custom color picker
+                if (value === 'solid:custom') {
+                    elements.backgroundColor.click();
+                    elements.backgroundSelect.classList.remove('open');
+                    return;
+                }
+
+                settings.background = value;
+                updateBackgroundSelect(settings.background);
+                elements.backgroundSelect.classList.remove('open');
+                saveSettings();
+                updateBackground();
+            }
+        });
+
+        // custom color picker (for custom solid color)
+        elements.backgroundColor.addEventListener('input', (e) => {
+            settings.background = 'solid:' + e.target.value;
+            updateBackgroundSelect(settings.background);
+            saveSettings();
+            updateBackground();
+        });
+
+        // close all dropdowns when clicking outside
+        document.addEventListener('click', () => {
+            closeAllDropdowns();
         });
 
         // line numbers toggle
@@ -353,27 +465,6 @@
             settings.lineNumbers = e.target.checked;
             saveSettings();
             updateLineNumbers();
-        });
-
-        // background type change
-        elements.backgroundType.addEventListener('change', (e) => {
-            settings.backgroundType = e.target.value;
-            saveSettings();
-            updateBackground();
-        });
-
-        // background color change
-        elements.backgroundColor.addEventListener('input', (e) => {
-            settings.backgroundColor = e.target.value;
-            saveSettings();
-            updateBackground();
-        });
-
-        // gradient preset change
-        elements.gradientPreset.addEventListener('change', (e) => {
-            settings.gradientPreset = e.target.value;
-            saveSettings();
-            updateBackground();
         });
 
         // padding change
