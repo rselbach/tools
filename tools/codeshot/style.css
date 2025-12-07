@@ -478,6 +478,8 @@ body.resizing * {
 }
 
 #code-output {
+    position: relative;
+    z-index: 1;
     margin: 0;
     padding: 1rem;
     font-family: 'JetBrains Mono', monospace;
@@ -502,6 +504,8 @@ body.resizing * {
 .line-numbers #code-input {
     padding-left: 3.5rem;
 }
+
+
 
 /* Export buttons */
 .export-buttons {
