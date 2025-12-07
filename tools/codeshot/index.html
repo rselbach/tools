@@ -33,26 +33,26 @@
                     <label for="language">Language</label>
                     <select id="language">
                         <option value="plaintext">Plain Text</option>
-                        <option value="javascript" selected>JavaScript</option>
-                        <option value="typescript">TypeScript</option>
-                        <option value="python">Python</option>
-                        <option value="go">Go</option>
-                        <option value="rust">Rust</option>
-                        <option value="ruby">Ruby</option>
-                        <option value="java">Java</option>
+                        <option value="bash">Bash</option>
                         <option value="c">C</option>
                         <option value="cpp">C++</option>
                         <option value="csharp">C#</option>
-                        <option value="php">PHP</option>
-                        <option value="swift">Swift</option>
-                        <option value="kotlin">Kotlin</option>
-                        <option value="html">HTML</option>
                         <option value="css">CSS</option>
+                        <option value="go">Go</option>
+                        <option value="html">HTML</option>
+                        <option value="java">Java</option>
+                        <option value="javascript" selected>JavaScript</option>
                         <option value="json">JSON</option>
-                        <option value="yaml">YAML</option>
-                        <option value="bash">Bash</option>
-                        <option value="sql">SQL</option>
+                        <option value="kotlin">Kotlin</option>
                         <option value="markdown">Markdown</option>
+                        <option value="php">PHP</option>
+                        <option value="python">Python</option>
+                        <option value="ruby">Ruby</option>
+                        <option value="rust">Rust</option>
+                        <option value="sql">SQL</option>
+                        <option value="swift">Swift</option>
+                        <option value="typescript">TypeScript</option>
+                        <option value="yaml">YAML</option>
                     </select>
                 </div>
 
@@ -109,6 +109,7 @@
         </div>
 
         <div class="preview-container" id="preview-container">
+            <div class="resize-handle resize-handle-left" id="resize-left"></div>
             <div class="preview-background" id="preview-background">
                 <div class="window" id="window">
                     <div class="window-header">
@@ -130,6 +131,7 @@ console.log(sayHello("Developer"));</textarea>
                     </div>
                 </div>
             </div>
+            <div class="resize-handle resize-handle-right" id="resize-right"></div>
         </div>
 
         <div class="export-buttons">

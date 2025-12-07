@@ -20,8 +20,11 @@
         gradientPickerGroup: document.getElementById('gradient-picker-group'),
         padding: document.getElementById('padding'),
         paddingValue: document.getElementById('padding-value'),
+        previewContainer: document.getElementById('preview-container'),
         previewBackground: document.getElementById('preview-background'),
         window: document.getElementById('window'),
+        resizeLeft: document.getElementById('resize-left'),
+        resizeRight: document.getElementById('resize-right'),
         downloadBtn: document.getElementById('download-btn'),
         copyBtn: document.getElementById('copy-btn'),
         prismThemeDark: document.getElementById('prism-theme-dark'),
@@ -264,16 +267,56 @@
     }
 
     /**
-     * Track window resize
+     * Initialize symmetric resize handles
+     * Dragging either side resizes from center
      */
-    function trackWindowResize() {
-        const resizeObserver = new ResizeObserver((entries) => {
-            for (const entry of entries) {
-                settings.windowWidth = Math.round(entry.contentRect.width);
-                saveSettings();
-            }
-        });
-        resizeObserver.observe(elements.window);
+    function initResizeHandles() {
+        let isDragging = false;
+        let startX = 0;
+        let startWidth = 0;
+
+        function onMouseDown(e) {
+            isDragging = true;
+            startX = e.clientX;
+            startWidth = elements.window.offsetWidth;
+            elements.previewContainer.classList.add('resizing');
+            document.body.classList.add('resizing');
+            e.target.classList.add('dragging');
+            e.preventDefault();
+        }
+
+        function onMouseMove(e) {
+            if (!isDragging) return;
+
+            // calculate delta from start position
+            const delta = e.clientX - startX;
+            
+            // determine if dragging left or right handle
+            const isLeftHandle = e.target === elements.resizeLeft || 
+                                 elements.resizeLeft.classList.contains('dragging');
+            
+            // for symmetric resize: left handle inverts delta
+            const widthChange = isLeftHandle ? -delta * 2 : delta * 2;
+            
+            const newWidth = Math.max(300, startWidth + widthChange);
+            elements.window.style.width = newWidth + 'px';
+            settings.windowWidth = newWidth;
+        }
+
+        function onMouseUp() {
+            if (!isDragging) return;
+            isDragging = false;
+            elements.previewContainer.classList.remove('resizing');
+            document.body.classList.remove('resizing');
+            elements.resizeLeft.classList.remove('dragging');
+            elements.resizeRight.classList.remove('dragging');
+            saveSettings();
+        }
+
+        elements.resizeLeft.addEventListener('mousedown', onMouseDown);
+        elements.resizeRight.addEventListener('mousedown', onMouseDown);
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
     }
 
     /**
@@ -368,7 +411,7 @@
         loadSettings();
         applySettings();
         initEventListeners();
-        trackWindowResize();
+        initResizeHandles();
 
         // initial highlight
         highlightCode();
