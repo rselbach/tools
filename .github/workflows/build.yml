@@ -18,15 +18,36 @@ jobs:
         with:
           go-version: "1.22"
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       - name: Generate index.html
         run: go run build/main.go
+
+      # Build wsolver (React/Vite app)
+      - name: Build wsolver
+        working-directory: tools/wsolver
+        run: |
+          npm ci
+          npm run build
 
       - name: Prepare deploy directory
         run: |
           mkdir -p dist
           cp index.html dist/
           cp -r static dist/
-          cp -r tools/* dist/
+
+          # copy tools, but replace wsolver source with its build output
+          for tool in tools/*/; do
+            name=$(basename "$tool")
+            if [ "$name" = "wsolver" ]; then
+              cp -r tools/wsolver/dist dist/wsolver
+            else
+              cp -r "$tool" dist/
+            fi
+          done
 
       - name: Set up SSH
         run: |
