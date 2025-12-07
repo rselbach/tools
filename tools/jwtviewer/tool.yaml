@@ -1,0 +1,3 @@
+name: JWT Viewer
+description: View and inspect JSON Web Tokens - header, payload, and expiration status
+icon: "🔓"

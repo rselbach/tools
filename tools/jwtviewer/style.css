@@ -1,0 +1,383 @@
+/* JWT Viewer - Stylesheet */
+
+:root {
+    --bg-primary: #0f0f1a;
+    --bg-secondary: #1a1a2e;
+    --text-primary: #f0f0f5;
+    --text-secondary: #b0b0c0;
+    --text-muted: #6a6a80;
+    --accent: #6366f1;
+    --accent-hover: #818cf8;
+    --border: #2a2a40;
+
+    /* JWT part colors */
+    --jwt-header: #f97316;
+    --jwt-payload: #a855f7;
+    --jwt-signature: #06b6d4;
+
+    /* Expiration status colors */
+    --status-valid: #22c55e;
+    --status-expired: #ef4444;
+    --status-not-yet: #eab308;
+}
+
+[data-theme="light"] {
+    --bg-primary: #f8fafc;
+    --bg-secondary: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --border: #e2e8f0;
+
+    /* Slightly darker JWT colors for light mode */
+    --jwt-header: #ea580c;
+    --jwt-payload: #9333ea;
+    --jwt-signature: #0891b2;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+/* Header */
+header {
+    margin-bottom: 2rem;
+}
+
+.header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.header-content h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.tagline {
+    color: var(--text-secondary);
+}
+
+/* Theme toggle */
+.theme-toggle {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.5rem;
+    cursor: pointer;
+    color: var(--text-primary);
+    transition: border-color 0.15s ease;
+}
+
+.theme-toggle:hover {
+    border-color: var(--accent);
+}
+
+.icon-moon {
+    display: none;
+}
+
+[data-theme="light"] .icon-sun {
+    display: none;
+}
+
+[data-theme="light"] .icon-moon {
+    display: block;
+}
+
+/* Input section */
+.input-section {
+    margin-bottom: 1.5rem;
+}
+
+.input-section label {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.input-section textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    resize: vertical;
+    transition: border-color 0.15s ease;
+}
+
+.input-section textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.input-section textarea::placeholder {
+    color: var(--text-muted);
+}
+
+/* JWT color-coded display */
+.jwt-display {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 1.8;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+}
+
+.jwt-part {
+    border-radius: 3px;
+    padding: 0.1rem 0;
+}
+
+.jwt-header {
+    color: var(--jwt-header);
+}
+
+.jwt-payload {
+    color: var(--jwt-payload);
+}
+
+.jwt-signature {
+    color: var(--jwt-signature);
+}
+
+.jwt-dot {
+    color: var(--text-muted);
+}
+
+/* Error message */
+.error-message {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid var(--status-expired);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    color: var(--status-expired);
+    font-size: 0.875rem;
+}
+
+/* Decoded sections */
+.decoded-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.decoded-panel {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-primary);
+}
+
+.panel-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.header-dot {
+    background: var(--jwt-header);
+}
+
+.payload-dot {
+    background: var(--jwt-payload);
+}
+
+.signature-dot {
+    background: var(--jwt-signature);
+}
+
+.panel-title {
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.panel-subtitle {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    margin-left: auto;
+}
+
+.panel-content {
+    margin: 0;
+    padding: 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    overflow-x: auto;
+    background: transparent !important;
+}
+
+.panel-content code {
+    font-family: 'JetBrains Mono', monospace;
+    background: transparent !important;
+}
+
+/* Header panel left border */
+.header-panel {
+    border-left: 3px solid var(--jwt-header);
+}
+
+/* Payload panel left border */
+.payload-panel {
+    border-left: 3px solid var(--jwt-payload);
+}
+
+/* Signature panel */
+.signature-panel {
+    border-left: 3px solid var(--jwt-signature);
+}
+
+.signature-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.signature-content code {
+    word-break: break-all;
+    color: var(--jwt-signature);
+}
+
+.signature-note {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Expiration panel */
+.expiration-panel {
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid var(--border);
+}
+
+.expiration-panel.valid {
+    background: rgba(34, 197, 94, 0.1);
+    border-color: var(--status-valid);
+}
+
+.expiration-panel.expired {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: var(--status-expired);
+}
+
+.expiration-panel.not-yet {
+    background: rgba(234, 179, 8, 0.1);
+    border-color: var(--status-not-yet);
+}
+
+.expiration-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+}
+
+.expiration-icon {
+    font-size: 1.25rem;
+}
+
+.expiration-panel.valid .expiration-content {
+    color: var(--status-valid);
+}
+
+.expiration-panel.expired .expiration-content {
+    color: var(--status-expired);
+}
+
+.expiration-panel.not-yet .expiration-content {
+    color: var(--status-not-yet);
+}
+
+.expiration-details {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.expiration-details div {
+    margin-top: 0.25rem;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding-top: 2rem;
+    margin-top: 2rem;
+    border-top: 1px solid var(--border);
+}
+
+footer a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.875rem;
+}
+
+footer a:hover {
+    color: var(--accent);
+}
+
+/* Utility */
+.hidden {
+    display: none !important;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .header-content h1 {
+        font-size: 1.5rem;
+    }
+
+    .jwt-display {
+        font-size: 0.7rem;
+    }
+
+    .panel-content {
+        font-size: 0.75rem;
+    }
+}

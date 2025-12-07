@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JWT Viewer - Inspect JSON Web Tokens</title>
+
+    <!-- JetBrains Mono font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Prism.js themes -->
+    <link id="prism-theme-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <link id="prism-theme-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" disabled>
+
+    <!-- Our styles -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-row">
+                <div class="header-content">
+                    <h1>JWT Viewer</h1>
+                    <p class="tagline">View and inspect JSON Web Tokens</p>
+                </div>
+                <button class="theme-toggle" id="theme-toggle" title="Toggle theme">
+                    <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="input-section">
+            <label for="jwt-input">Paste your JWT</label>
+            <textarea id="jwt-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c" spellcheck="false"></textarea>
+        </div>
+
+        <div id="jwt-display" class="jwt-display hidden">
+            <span class="jwt-part jwt-header" id="jwt-display-header"></span><span class="jwt-dot">.</span><span class="jwt-part jwt-payload" id="jwt-display-payload"></span><span class="jwt-dot">.</span><span class="jwt-part jwt-signature" id="jwt-display-signature"></span>
+        </div>
+
+        <div id="error-message" class="error-message hidden"></div>
+
+        <div id="decoded-sections" class="decoded-sections hidden">
+            <div class="decoded-panel header-panel">
+                <div class="panel-header">
+                    <span class="panel-dot header-dot"></span>
+                    <span class="panel-title">Header</span>
+                    <span class="panel-subtitle" id="header-alg"></span>
+                </div>
+                <pre class="panel-content"><code id="header-json" class="language-json"></code></pre>
+            </div>
+
+            <div class="decoded-panel payload-panel">
+                <div class="panel-header">
+                    <span class="panel-dot payload-dot"></span>
+                    <span class="panel-title">Payload</span>
+                </div>
+                <pre class="panel-content"><code id="payload-json" class="language-json"></code></pre>
+            </div>
+
+            <div id="expiration-panel" class="expiration-panel hidden">
+                <div class="expiration-content">
+                    <span class="expiration-icon" id="expiration-icon"></span>
+                    <span class="expiration-text" id="expiration-text"></span>
+                </div>
+                <div class="expiration-details" id="expiration-details"></div>
+            </div>
+
+            <div class="decoded-panel signature-panel">
+                <div class="panel-header">
+                    <span class="panel-dot signature-dot"></span>
+                    <span class="panel-title">Signature</span>
+                </div>
+                <div class="panel-content signature-content">
+                    <code id="signature-value"></code>
+                    <p class="signature-note">Signature cannot be verified without the secret key</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <a href="/">Back to tools</a>
+        </footer>
+    </div>
+
+    <!-- Prism.js core -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <!-- Prism JSON language -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+
+    <script src="app.js"></script>
+</body>
+</html>
