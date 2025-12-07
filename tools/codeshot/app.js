@@ -30,8 +30,10 @@
         window: document.getElementById('window'),
         resizeLeft: document.getElementById('resize-left'),
         resizeRight: document.getElementById('resize-right'),
-        downloadBtn: document.getElementById('download-btn'),
-        copyBtn: document.getElementById('copy-btn'),
+        exportSplit: document.getElementById('export-split'),
+        exportBtn: document.getElementById('export-btn'),
+        exportToggle: document.getElementById('export-toggle'),
+        exportDropdown: document.getElementById('export-dropdown'),
         prismThemeDark: document.getElementById('prism-theme-dark'),
         prismThemeLight: document.getElementById('prism-theme-light'),
     };
@@ -46,6 +48,7 @@
         padding: 32,
         windowWidth: 600,
         windowHeight: null, // auto
+        exportAction: 'download', // 'download' or 'clipboard'
     };
 
     // current settings
@@ -94,6 +97,7 @@
         updateTheme();
         updateBackground();
         updateLineNumbers();
+        updateExportDropdown(settings.exportAction);
         highlightCode();
     }
 
@@ -302,10 +306,22 @@
     }
 
     /**
-     * Export as PNG
+     * Execute the current export action
      */
-    async function exportPNG() {
-        const btn = elements.downloadBtn;
+    function doExport() {
+        if (settings.exportAction === 'clipboard') {
+            copyToClipboard();
+        } else {
+            downloadPNG();
+        }
+    }
+
+    /**
+     * Download as PNG
+     */
+    async function downloadPNG() {
+        const btn = elements.exportBtn;
+        const originalText = btn.textContent;
         btn.disabled = true;
         btn.textContent = 'Exporting...';
 
@@ -324,14 +340,7 @@
             alert('Failed to export image. Please try again.');
         } finally {
             btn.disabled = false;
-            btn.innerHTML = `
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="7 10 12 15 17 10"/>
-                    <line x1="12" y1="15" x2="12" y2="3"/>
-                </svg>
-                Download PNG
-            `;
+            btn.textContent = originalText;
         }
     }
 
@@ -343,7 +352,8 @@
      * the user gesture context intact.
      */
     async function copyToClipboard() {
-        const btn = elements.copyBtn;
+        const btn = elements.exportBtn;
+        const originalText = btn.textContent;
         btn.disabled = true;
         btn.textContent = 'Copying...';
 
@@ -363,26 +373,29 @@
             ]);
 
             btn.textContent = 'Copied!';
-            setTimeout(() => resetCopyBtn(), 2000);
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }, 2000);
         } catch (e) {
             console.error('Clipboard write failed:', e);
             
             // fallback for browsers that don't support async clipboard
             // or when on insecure context (http)
             alert('Copy to clipboard requires HTTPS. Use "Download PNG" instead, or deploy to your server.');
-            resetCopyBtn();
+            btn.disabled = false;
+            btn.textContent = originalText;
         }
     }
 
-    function resetCopyBtn() {
-        elements.copyBtn.disabled = false;
-        elements.copyBtn.innerHTML = `
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-            </svg>
-            Copy to Clipboard
-        `;
+    /**
+     * Update export dropdown selection
+     */
+    function updateExportDropdown(action) {
+        const options = elements.exportDropdown.querySelectorAll('.split-button-option');
+        options.forEach(opt => {
+            opt.classList.toggle('selected', opt.dataset.action === action);
+        });
     }
 
     /**
@@ -444,6 +457,7 @@
     function closeAllDropdowns() {
         elements.languageSelect.classList.remove('open');
         elements.backgroundSelect.classList.remove('open');
+        elements.exportSplit.classList.remove('open');
     }
 
     /**
@@ -562,9 +576,26 @@
             updateBackground();
         });
 
-        // export buttons
-        elements.downloadBtn.addEventListener('click', exportPNG);
-        elements.copyBtn.addEventListener('click', copyToClipboard);
+        // export split button
+        elements.exportBtn.addEventListener('click', doExport);
+        
+        elements.exportToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeAllDropdowns();
+            elements.exportSplit.classList.toggle('open');
+        });
+
+        elements.exportDropdown.addEventListener('click', (e) => {
+            const option = e.target.closest('.split-button-option');
+            if (option) {
+                settings.exportAction = option.dataset.action;
+                updateExportDropdown(settings.exportAction);
+                elements.exportSplit.classList.remove('open');
+                saveSettings();
+                // execute the action immediately after selecting
+                doExport();
+            }
+        });
 
         // handle tab key in textarea
         elements.codeInput.addEventListener('keydown', (e) => {

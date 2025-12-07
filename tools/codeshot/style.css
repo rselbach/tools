@@ -58,8 +58,11 @@ header h1 {
     background: var(--bg-secondary);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 1.25rem;
-    margin-bottom: 1.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: table;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .control-row {
@@ -335,7 +338,7 @@ header h1 {
 
 /* Preview container */
 .preview-container {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -508,13 +511,105 @@ body.resizing * {
 
 
 
-/* Export buttons */
-.export-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-bottom: 2rem;
+/* Split export button */
+.control-group-export {
 }
+
+.split-button {
+    position: relative;
+    display: inline-flex;
+}
+
+.split-button-main {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 6px 0 0 6px;
+    transition: background 0.15s ease;
+}
+
+.split-button-main:hover {
+    background: var(--accent-hover);
+}
+
+.split-button-toggle {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.5rem 0.5rem;
+    cursor: pointer;
+    border-radius: 0 6px 6px 0;
+    display: flex;
+    align-items: center;
+    transition: background 0.15s ease;
+}
+
+.split-button-toggle:hover {
+    background: var(--accent-hover);
+}
+
+.split-button.open .split-button-toggle {
+    background: var(--accent-hover);
+}
+
+.split-button-toggle svg {
+    transition: transform 0.15s ease;
+}
+
+.split-button.open .split-button-toggle svg {
+    transform: rotate(180deg);
+}
+
+.split-button-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    min-width: 180px;
+    z-index: 100;
+    display: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.split-button.open .split-button-dropdown {
+    display: block;
+}
+
+.split-button-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    transition: background 0.1s ease;
+    font-size: 0.875rem;
+}
+
+.split-button-option:first-child {
+    border-radius: 6px 6px 0 0;
+}
+
+.split-button-option:last-child {
+    border-radius: 0 0 6px 6px;
+}
+
+.split-button-option:hover {
+    background: var(--bg-secondary);
+}
+
+.split-button-option.selected {
+    background: var(--accent);
+    color: white;
+}
+
+/* Old export buttons - removed */
 
 .btn {
     display: inline-flex;
