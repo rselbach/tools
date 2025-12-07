@@ -21,6 +21,13 @@ jobs:
       - name: Generate index.html
         run: go run build/main.go
 
+      - name: Prepare deploy directory
+        run: |
+          mkdir -p dist
+          cp index.html dist/
+          cp -r static dist/
+          cp -r tools/* dist/
+
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
@@ -39,13 +46,4 @@ jobs:
         run: |
           rsync -avz --delete \
             -e "ssh -i ~/.ssh/deploy_key" \
-            --exclude='.git' \
-            --exclude='.github' \
-            --exclude='build' \
-            --exclude='template' \
-            --exclude='go.mod' \
-            --exclude='go.sum' \
-            --exclude='README.md' \
-            --exclude='LICENSE' \
-            --exclude='.gitignore' \
-            ./ ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }}
+            dist/ ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }}
