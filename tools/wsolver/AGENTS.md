@@ -1,0 +1,19 @@
+AGENTS Guide for wsolver
+- Build/Run (web): `npm start` (dev), `npm run build`, `npm run preview`.
+- Test (web): `npm test`; single: `npx vitest src/path/to/file.test.{js,jsx} -t "case name"` or `npx vitest -t "name"`.
+- Lint (web): `npx eslint src --max-warnings=0`; auto-fix: `npx eslint src --fix`.
+- Build (Go util/): from `util/`, `go build -o rankwords ./rankwords.go`; run flags: see `util/README.md`.
+- Test (Go util/): from `util/`, `go test .`; single: `go test -run '^TestName$' .`; all: `go test ./...`.
+- Go imports/format: run `goimports -w .` then `gofmt -s -w .` (Go 1.21+).
+- React imports: libraries → absolute → relative; one import per module; keep CSS imports last.
+- Go naming: exported CamelCase with godoc; unexported lowerCamel; error vars `ErrX`.
+- Go comments: in-function comments lowercase; add godoc to exported symbols.
+- Go tests: table-driven `tests := map[string]struct{...}`; loop var `tc`; use `want`; prefer `require.New(t)` when available.
+- Go control flow: favour early returns; prefer `switch` to long `if` chains.
+- Go errors: wrap with `fmt.Errorf("context: %w", err)`; avoid panics; only `log.Fatalf` in `main`.
+- React style: functional components; PascalCase files; keep hooks top-level; add JSDoc for non-trivial logic.
+- File layout: frontend under `src/`; Go utility isolated in `util/` module.
+- Vite + Node: JavaScript only (no TypeScript); keep ES modules.
+- Cursor/Copilot: no rules found in `.cursor/rules/`, `.cursorrules`, or `.github/copilot-instructions.md`.
+- Single-test quick refs: web `npx vitest -t "name"`; Go `go test -run '^TestName$' .`.
+- CI hint: use non-interactive commands; set `CI=1` for vitest in CI.
