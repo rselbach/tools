@@ -1,0 +1,351 @@
+/* Codeshot - Stylesheet */
+
+:root {
+    --bg-primary: #0f0f1a;
+    --bg-secondary: #1a1a2e;
+    --text-primary: #f0f0f5;
+    --text-secondary: #b0b0c0;
+    --text-muted: #6a6a80;
+    --accent: #6366f1;
+    --accent-hover: #818cf8;
+    --border: #2a2a40;
+
+    /* Window theme colors */
+    --window-bg-dark: #1e1e2e;
+    --window-bg-light: #ffffff;
+    --window-header-dark: #2d2d3d;
+    --window-header-light: #e8e8e8;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+/* Header */
+header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.tagline {
+    color: var(--text-secondary);
+}
+
+/* Controls */
+.controls {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.control-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-end;
+}
+
+.control-row + .control-row {
+    margin-top: 1rem;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.control-group label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.control-group input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    accent-color: var(--accent);
+}
+
+.control-group select,
+.control-group input[type="color"] {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-primary);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+.control-group select:focus,
+.control-group input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.control-group input[type="color"] {
+    width: 60px;
+    height: 36px;
+    padding: 2px;
+}
+
+.control-group input[type="range"] {
+    width: 120px;
+    accent-color: var(--accent);
+}
+
+/* Preview container */
+.preview-container {
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: center;
+}
+
+.preview-background {
+    padding: 32px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: inline-block;
+}
+
+.preview-background.transparent {
+    background: repeating-conic-gradient(#808080 0% 25%, #fff 0% 50%) 50% / 20px 20px;
+}
+
+/* macOS Window */
+.window {
+    background: var(--window-bg-dark);
+    border-radius: 10px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    resize: both;
+    min-width: 300px;
+    min-height: 150px;
+    width: 600px;
+    height: auto;
+}
+
+.window.light {
+    background: var(--window-bg-light);
+}
+
+.window-header {
+    background: var(--window-header-dark);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+}
+
+.window.light .window-header {
+    background: var(--window-header-light);
+}
+
+.window-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.window-button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.window-button.close {
+    background: #ff5f57;
+}
+
+.window-button.minimize {
+    background: #ffbd2e;
+}
+
+.window-button.maximize {
+    background: #28c840;
+}
+
+/* Editor (overlay technique) */
+.editor-wrapper {
+    position: relative;
+    min-height: 100px;
+}
+
+#code-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    background: transparent;
+    color: transparent;
+    caret-color: #fff;
+    border: none;
+    resize: none;
+    outline: none;
+    overflow: auto;
+    white-space: pre;
+    z-index: 2;
+}
+
+.window.light #code-input {
+    caret-color: #000;
+}
+
+#code-output {
+    margin: 0;
+    padding: 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    background: transparent !important;
+    overflow: auto;
+    min-height: 100px;
+    white-space: pre;
+}
+
+#code-output code {
+    font-family: 'JetBrains Mono', monospace;
+    background: transparent !important;
+}
+
+/* Line numbers adjustments */
+.line-numbers #code-output {
+    padding-left: 3.5rem;
+}
+
+.line-numbers #code-input {
+    padding-left: 3.5rem;
+}
+
+/* Export buttons */
+.export-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s ease;
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--accent-hover);
+}
+
+.btn-secondary {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+    border-color: var(--accent);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+footer a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.875rem;
+}
+
+footer a:hover {
+    color: var(--accent);
+}
+
+/* Hide controls based on background type */
+#color-picker-group.hidden,
+#gradient-picker-group.hidden {
+    display: none;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .control-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .control-group {
+        width: 100%;
+    }
+
+    .control-group select,
+    .control-group input[type="range"] {
+        width: 100%;
+    }
+
+    .window {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .export-buttons {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
