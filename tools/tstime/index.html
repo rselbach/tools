@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timestamp to Time - Unix Timestamp Converter</title>
+
+    <!-- JetBrains Mono font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Our styles -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-row">
+                <div class="header-content">
+                    <h1>Timestamp to Time</h1>
+                    <p class="tagline">Convert Unix timestamps to readable dates</p>
+                </div>
+                <button class="theme-toggle" id="theme-toggle" title="Toggle theme">
+                    <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="input-section">
+            <label for="ts-input">Enter Unix timestamp</label>
+            <div class="input-row">
+                <input type="text" id="ts-input" placeholder="1733680800" spellcheck="false">
+                <button class="now-btn" id="now-btn" title="Use current time">Now</button>
+            </div>
+            <p class="input-hint">Supports seconds, milliseconds, and nanoseconds</p>
+        </div>
+
+        <div id="error-message" class="error-message hidden"></div>
+
+        <div id="result-section" class="result-section hidden">
+            <div class="result-panel local-panel">
+                <div class="panel-header">
+                    <span class="panel-icon">🏠</span>
+                    <span class="panel-title">Local Time</span>
+                    <span class="panel-subtitle" id="timezone-name"></span>
+                </div>
+                <div class="panel-content">
+                    <div class="time-display" id="local-time"></div>
+                    <div class="date-display" id="local-date"></div>
+                </div>
+            </div>
+
+            <div class="result-panel utc-panel">
+                <div class="panel-header">
+                    <span class="panel-icon">🌍</span>
+                    <span class="panel-title">UTC</span>
+                </div>
+                <div class="panel-content">
+                    <div class="time-display" id="utc-time"></div>
+                    <div class="date-display" id="utc-date"></div>
+                </div>
+            </div>
+
+            <div class="result-panel iso-panel">
+                <div class="panel-header">
+                    <span class="panel-icon">📋</span>
+                    <span class="panel-title">ISO 8601</span>
+                    <button class="copy-btn" id="copy-iso" title="Copy">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="panel-content">
+                    <code class="iso-display" id="iso-string"></code>
+                </div>
+            </div>
+
+            <div class="result-panel relative-panel">
+                <div class="panel-header">
+                    <span class="panel-icon">⏱️</span>
+                    <span class="panel-title">Relative</span>
+                </div>
+                <div class="panel-content">
+                    <div class="relative-display" id="relative-time"></div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; Roberto Selbach</p>
+            <p>Timestamp to Time is part of <a href="/">Roberto's Toolset</a></p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
