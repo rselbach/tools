@@ -44,6 +44,14 @@
             </div>
         </header>
 
+        <div class="privacy-notice">
+            <svg class="privacy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <span>Your JWT never leaves your browser. All decoding happens locally in JavaScript. <a href="https://github.com/rselbach/tools/tree/main/tools/jwtviewer" target="_blank" rel="noopener">View source code</a></span>
+        </div>
+
         <div class="input-section">
             <label for="jwt-input">Paste your JWT</label>
             <textarea id="jwt-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c" spellcheck="false"></textarea>

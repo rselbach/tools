@@ -103,6 +103,36 @@ header {
     display: block;
 }
 
+/* Privacy notice */
+.privacy-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.5rem;
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: 8px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.privacy-icon {
+    flex-shrink: 0;
+    color: #22c55e;
+    margin-top: 0.1rem;
+}
+
+.privacy-notice a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.privacy-notice a:hover {
+    text-decoration: underline;
+}
+
 /* Input section */
 .input-section {
     margin-bottom: 1.5rem;
