@@ -159,6 +159,38 @@ header {
     border-color: var(--accent);
 }
 
+/* Format toggle */
+.format-toggle {
+    display: flex;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.format-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-family: inherit;
+    background: var(--bg-secondary);
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.format-btn:not(:last-child) {
+    border-right: 1px solid var(--border);
+}
+
+.format-btn:hover {
+    color: var(--text-primary);
+}
+
+.format-btn.active {
+    background: var(--accent);
+    color: white;
+}
+
 /* Output section */
 .output-section {
     background: var(--bg-secondary);
@@ -182,7 +214,12 @@ header {
     font-size: 0.875rem;
 }
 
-.copy-btn {
+.output-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.action-btn {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -196,7 +233,7 @@ header {
     transition: all 0.15s ease;
 }
 
-.copy-btn:hover {
+.action-btn:hover {
     border-color: var(--accent);
     color: var(--accent);
 }
@@ -210,6 +247,123 @@ header {
     overflow-x: auto;
     white-space: pre;
     color: var(--text-primary);
+}
+
+.output-png {
+    padding: 1rem;
+    display: flex;
+    justify-content: center;
+    background: repeating-conic-gradient(#e0e0e0 0% 25%, #ffffff 0% 50%) 50% / 16px 16px;
+}
+
+[data-theme="light"] .output-png {
+    background: repeating-conic-gradient(#e0e0e0 0% 25%, #ffffff 0% 50%) 50% / 16px 16px;
+}
+
+.output-png canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Split export button */
+.split-button {
+    position: relative;
+    display: inline-flex;
+}
+
+.split-button-main {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 6px 0 0 6px;
+    transition: background 0.15s ease;
+}
+
+.split-button-main:hover {
+    background: var(--accent-hover);
+}
+
+.split-button-main:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.split-button-toggle {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.4rem 0.5rem;
+    cursor: pointer;
+    border-radius: 0 6px 6px 0;
+    display: flex;
+    align-items: center;
+    transition: background 0.15s ease;
+}
+
+.split-button-toggle:hover {
+    background: var(--accent-hover);
+}
+
+.split-button.open .split-button-toggle {
+    background: var(--accent-hover);
+}
+
+.split-button-toggle svg {
+    transition: transform 0.15s ease;
+}
+
+.split-button.open .split-button-toggle svg {
+    transform: rotate(180deg);
+}
+
+.split-button-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    min-width: 180px;
+    z-index: 100;
+    display: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.split-button.open .split-button-dropdown {
+    display: block;
+}
+
+.split-button-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    transition: background 0.1s ease;
+    font-size: 0.8rem;
+    color: var(--text-primary);
+}
+
+.split-button-option:first-child {
+    border-radius: 6px 6px 0 0;
+}
+
+.split-button-option:last-child {
+    border-radius: 0 0 6px 6px;
+}
+
+.split-button-option:hover {
+    background: var(--bg-secondary);
+}
+
+.split-button-option.selected {
+    background: var(--accent);
+    color: white;
 }
 
 /* Footer */
