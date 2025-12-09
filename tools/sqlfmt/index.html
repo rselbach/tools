@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Formatter - Format and Beautify SQL</title>
+
+    <!-- JetBrains Mono font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Prism.js themes -->
+    <link id="prism-theme-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <link id="prism-theme-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" disabled>
+
+    <!-- Our styles -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-row">
+                <div class="header-content">
+                    <h1>SQL Formatter</h1>
+                    <p class="tagline">Format and beautify SQL queries</p>
+                </div>
+                <button class="theme-toggle" id="theme-toggle" title="Toggle theme">
+                    <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="input-section">
+            <label for="sql-input">Enter SQL</label>
+            <textarea id="sql-input" placeholder="SELECT * FROM users WHERE id = 1" spellcheck="false"></textarea>
+        </div>
+
+        <div class="options-section">
+            <div class="option-group">
+                <label for="dialect">Dialect</label>
+                <select id="dialect">
+                    <option value="sql">Standard SQL</option>
+                    <option value="postgresql">PostgreSQL</option>
+                    <option value="mysql">MySQL</option>
+                    <option value="sqlite">SQLite</option>
+                    <option value="transactsql">SQL Server</option>
+                    <option value="plsql">Oracle</option>
+                    <option value="bigquery">BigQuery</option>
+                    <option value="snowflake">Snowflake</option>
+                    <option value="redshift">Redshift</option>
+                </select>
+            </div>
+            <div class="option-group">
+                <label for="keyword-case">Keywords</label>
+                <select id="keyword-case">
+                    <option value="upper">UPPERCASE</option>
+                    <option value="lower">lowercase</option>
+                    <option value="preserve">Preserve</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="error-message" class="error-message hidden"></div>
+
+        <div id="output-section" class="output-section hidden">
+            <div class="output-header">
+                <span class="output-title">Formatted SQL</span>
+                <button class="copy-btn" id="copy-btn" title="Copy to clipboard">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span>Copy</span>
+                </button>
+            </div>
+            <pre class="output"><code id="sql-output" class="language-sql"></code></pre>
+        </div>
+
+        <footer>
+            <p>&copy; Roberto Selbach</p>
+            <p>SQL Formatter is part of <a href="/">Roberto's Toolset</a></p>
+        </footer>
+    </div>
+
+    <!-- Prism.js core -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <!-- Prism SQL language -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
+    <!-- SQL Formatter -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql-formatter/15.4.2/sql-formatter.min.js"></script>
+
+    <script src="app.js"></script>
+</body>
+</html>
