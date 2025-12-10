@@ -64,14 +64,17 @@
                 {{end}}
             </div>
             {{end}}
-            <ul class="tool-list">
-                {{range .Tools}}
-                <li>
-                    <a href="/{{.Path}}/" class="tool-link"><span class="tool-icon">{{.Icon}}</span>{{.Name}}</a>
-                    <span class="tool-description">{{.Description}}</span>
-                </li>
-                {{end}}
-            </ul>
+            <div class="tools-box">
+                <span class="highlight-label">All Tools</span>
+                <ul class="tool-list">
+                    {{range .Tools}}
+                    <li>
+                        <a href="/{{.Path}}/" class="tool-link"><span class="tool-icon">{{.Icon}}</span>{{.Name}}</a>
+                        <span class="tool-description">{{.Description}}</span>
+                    </li>
+                    {{end}}
+                </ul>
+            </div>
             {{else}}
             <p class="empty-state">No tools yet. Check back soon!</p>
             {{end}}
