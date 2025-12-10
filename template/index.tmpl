@@ -40,16 +40,35 @@
 
         <main>
             {{if .HasTools}}
+            {{if or .RecentlyAdded .RecentlyUpdated}}
+            <div class="highlight-boxes">
+                {{if .RecentlyAdded}}
+                <div class="highlight-box">
+                    <span class="highlight-label">Recently Added</span>
+                    <ul class="highlight-list">
+                        {{range .RecentlyAdded}}
+                        <li><a href="/{{.Path}}/">{{.Icon}} {{.Name}}</a> <span class="highlight-date">{{.AddedAt.Format "Jan 2, 2006"}}</span></li>
+                        {{end}}
+                    </ul>
+                </div>
+                {{end}}
+                {{if .RecentlyUpdated}}
+                <div class="highlight-box">
+                    <span class="highlight-label">Recently Updated</span>
+                    <ul class="highlight-list">
+                        {{range .RecentlyUpdated}}
+                        <li><a href="/{{.Path}}/">{{.Icon}} {{.Name}}</a> <span class="highlight-date">{{.UpdatedAt.Format "Jan 2, 2006"}}</span></li>
+                        {{end}}
+                    </ul>
+                </div>
+                {{end}}
+            </div>
+            {{end}}
             <ul class="tool-list">
                 {{range .Tools}}
                 <li>
-                    <a href="/{{.Path}}/" class="tool-card">
-                        <span class="tool-icon">{{.Icon}}</span>
-                        <div class="tool-info">
-                            <h2 class="tool-name">{{.Name}}</h2>
-                            <p class="tool-description">{{.Description}}</p>
-                        </div>
-                    </a>
+                    <a href="/{{.Path}}/" class="tool-link"><span class="tool-icon">{{.Icon}}</span>{{.Name}}</a>
+                    <span class="tool-description">{{.Description}}</span>
                 </li>
                 {{end}}
             </ul>
