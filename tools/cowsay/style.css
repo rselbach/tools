@@ -245,6 +245,67 @@ header {
     color: white;
 }
 
+/* Tail position picker */
+.tail-picker {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px;
+    padding: 4px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    width: 52px;
+    height: 40px;
+}
+
+.tail-corner {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    position: relative;
+}
+
+.tail-corner:hover {
+    border-color: var(--accent);
+    background: var(--bg-secondary);
+}
+
+.tail-corner.selected {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.tail-corner.selected::after {
+    content: '';
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: white;
+    border-radius: 50%;
+}
+
+.tail-corner[data-position="topLeft"].selected::after {
+    top: 2px;
+    left: 2px;
+}
+
+.tail-corner[data-position="topRight"].selected::after {
+    top: 2px;
+    right: 2px;
+}
+
+.tail-corner[data-position="bottomLeft"].selected::after {
+    bottom: 2px;
+    left: 2px;
+}
+
+.tail-corner[data-position="bottomRight"].selected::after {
+    bottom: 2px;
+    right: 2px;
+}
+
 /* Format toggle */
 .format-toggle {
     display: flex;

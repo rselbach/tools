@@ -57,6 +57,9 @@
     const fontPickerBtn = document.getElementById('font-picker-btn');
     const fontPickerLabel = document.getElementById('font-picker-label');
     const fontPickerDropdown = document.getElementById('font-picker-dropdown');
+    const tailGroup = document.getElementById('tail-group');
+    const tailPicker = document.getElementById('tail-picker');
+    const tailCorners = document.querySelectorAll('.tail-corner');
 
     // default settings
     const defaultSettings = {
@@ -64,6 +67,7 @@
         maxWidth: 40,
         exportAction: 'download',
         font: 'bangers',
+        tailPosition: 'bottomLeft', // bottomLeft, bottomRight, topLeft, topRight
     };
 
     // current settings
@@ -94,8 +98,16 @@
     function applySettings() {
         maxWidthInput.value = settings.maxWidth;
         updateFontPicker(settings.font);
+        updateTailPicker(settings.tailPosition);
         setFormat(settings.format, false); // don't save again
         updateExportDropdown(settings.exportAction);
+    }
+
+    // update tail picker selection
+    function updateTailPicker(position) {
+        tailCorners.forEach(btn => {
+            btn.classList.toggle('selected', btn.dataset.position === position);
+        });
     }
 
     // update font picker display
@@ -241,6 +253,7 @@
         const lineHeight = fontSize * fontConfig.lineHeight;
         const font = `${fontSize}px ${fontConfig.family}`;
         const strokeWidth = 2;
+        const tailPosition = settings.tailPosition || 'bottomLeft';
 
         // measure text
         ctx.font = font;
@@ -265,36 +278,66 @@
         const bubbleWidth = innerWidth + bulgeSize * 0.5;
         const bubbleHeight = innerHeight + bulgeSize * 0.5;
 
-        // tail circles
+        // tail configuration based on position
+        const isLeft = tailPosition.includes('Left');
+        const isTop = tailPosition.includes('top');
+
+        // tail circles (largest to smallest, moving away from bubble)
         const tailCircles = [
             { r: 12 },
             { r: 8 },
             { r: 5 },
         ];
 
-        // calculate tail positions - nearly horizontal with slight downward angle
-        const tailStartX = bulgeSize * 1.2;
-        const tailStartY = bubbleHeight - bulgeSize * 0.3 - 5;
+        // calculate tail positions relative to bubble
+        // start point is on the bubble edge at the chosen corner
+        const tailStartX = isLeft ? bulgeSize * 1.2 : bubbleWidth - bulgeSize * 1.2;
+        const tailStartY = isTop ? bulgeSize * 0.3 + 5 : bubbleHeight - bulgeSize * 0.3 - 5;
+
         const tailPositions = [];
         let tx = tailStartX;
         let ty = tailStartY;
+        const xDir = isLeft ? -1 : 1;
+        const yDir = isTop ? -1 : 1;
+
         for (let i = 0; i < tailCircles.length; i++) {
             const tc = tailCircles[i];
-            tx -= tc.r * 2 + 8;
-            ty += 6; // slight downward angle
+            tx += xDir * (tc.r * 2 + 8);
+            ty += yDir * 6; // slight angle away from bubble
             tailPositions.push({ x: tx, y: ty, r: tc.r });
         }
 
-        // find bounding box
+        // find bounding box including tail
         const lastTail = tailPositions[tailPositions.length - 1];
-        const tailMaxY = lastTail.y + lastTail.r + strokeWidth;
-        const tailMinX = lastTail.x - lastTail.r - strokeWidth;
+        const tailExtentX = isLeft
+            ? lastTail.x - lastTail.r - strokeWidth
+            : lastTail.x + lastTail.r + strokeWidth;
+        const tailExtentY = isTop
+            ? lastTail.y - lastTail.r - strokeWidth
+            : lastTail.y + lastTail.r + strokeWidth;
 
         // canvas size - with safe margin for bulges
         const margin = bulgeSize * 0.6 + strokeWidth;
-        const offsetX = Math.max(margin, margin - tailMinX);
-        const canvasWidth = bubbleWidth + offsetX + margin;
-        const canvasHeight = tailMaxY + margin;
+
+        // calculate offsets to fit everything
+        let offsetX, offsetY;
+        let canvasWidth, canvasHeight;
+
+        if (isLeft) {
+            offsetX = Math.max(margin, margin - tailExtentX);
+            canvasWidth = bubbleWidth + offsetX + margin;
+        } else {
+            offsetX = margin;
+            canvasWidth = Math.max(bubbleWidth + margin * 2, tailExtentX + margin);
+        }
+
+        if (isTop) {
+            offsetY = Math.max(margin, margin - tailExtentY);
+            canvasHeight = bubbleHeight + offsetY + margin;
+        } else {
+            offsetY = margin;
+            canvasHeight = Math.max(bubbleHeight + margin * 2, tailExtentY + margin);
+        }
 
         canvas.width = canvasWidth;
         canvas.height = canvasHeight;
@@ -304,11 +347,7 @@
 
         // bubble position
         const bx = offsetX;
-        const by = margin;
-
-        // center of bubble
-        const cx = bx + bubbleWidth / 2;
-        const cy = by + bubbleHeight / 2;
+        const by = offsetY;
 
         // draw cloud shape - a series of connected arcs
         ctx.beginPath();
@@ -389,7 +428,7 @@
         // draw tail circles (ellipses for more organic look)
         for (const tc of tailPositions) {
             ctx.beginPath();
-            ctx.ellipse(tc.x + offsetX, tc.y + margin, tc.r * 1.2, tc.r, 0, 0, Math.PI * 2);
+            ctx.ellipse(tc.x + offsetX, tc.y + offsetY, tc.r * 1.2, tc.r, 0, 0, Math.PI * 2);
             ctx.fillStyle = '#ffffff';
             ctx.fill();
             ctx.strokeStyle = '#333333';
@@ -515,8 +554,10 @@
         formatBtns.forEach(btn => {
             btn.classList.toggle('active', btn.dataset.format === format);
         });
-        // show font picker only for PNG mode
-        fontGroup.classList.toggle('hidden', format !== 'png');
+        // show font and tail pickers only for PNG mode
+        const isPng = format === 'png';
+        fontGroup.classList.toggle('hidden', !isPng);
+        tailGroup.classList.toggle('hidden', !isPng);
         if (save) saveSettings();
         updateOutput();
     }
@@ -588,6 +629,16 @@
                 saveSettings();
                 updateOutput();
             }
+        });
+
+        // tail position picker
+        tailCorners.forEach(btn => {
+            btn.addEventListener('click', () => {
+                settings.tailPosition = btn.dataset.position;
+                updateTailPicker(settings.tailPosition);
+                saveSettings();
+                updateOutput();
+            });
         });
 
         // export split button
