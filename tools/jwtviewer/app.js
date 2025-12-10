@@ -19,7 +19,7 @@
     const expirationIcon = document.getElementById('expiration-icon');
     const expirationText = document.getElementById('expiration-text');
     const expirationDetails = document.getElementById('expiration-details');
-    const themeToggle = document.getElementById('theme-toggle');
+
 
     // decode base64url to string
     function base64UrlDecode(str) {
@@ -262,25 +262,12 @@
         }
     }
 
-    // theme handling
-    function initTheme() {
-        const saved = localStorage.getItem('jwt-theme');
-        if (saved === 'light') {
-            document.documentElement.setAttribute('data-theme', 'light');
-            document.getElementById('prism-theme-dark').disabled = true;
-            document.getElementById('prism-theme-light').disabled = false;
-        }
-    }
-
-    function toggleTheme() {
-        const current = document.documentElement.getAttribute('data-theme');
-        const newTheme = current === 'light' ? 'dark' : 'light';
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('jwt-theme', newTheme);
-
-        // toggle prism themes
-        document.getElementById('prism-theme-dark').disabled = newTheme === 'light';
-        document.getElementById('prism-theme-light').disabled = newTheme === 'dark';
+    // Prism theme handling - sync with page theme
+    function syncPrismTheme() {
+        const theme = document.documentElement.getAttribute('data-theme');
+        const isLight = theme === 'light';
+        document.getElementById('prism-theme-dark').disabled = isLight;
+        document.getElementById('prism-theme-light').disabled = !isLight;
 
         // re-highlight if there's content
         if (!decodedSections.classList.contains('hidden')) {
@@ -291,11 +278,12 @@
 
     // initialize
     function init() {
-        initTheme();
+        // Sync Prism theme on load and when theme changes
+        syncPrismTheme();
+        window.addEventListener('theme-changed', syncPrismTheme);
 
         // event listeners
         jwtInput.addEventListener('input', handleInput);
-        themeToggle.addEventListener('click', toggleTheme);
 
         // focus input on load
         jwtInput.focus();

@@ -8,7 +8,7 @@
     // DOM elements
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('file-input');
-    const themeToggle = document.getElementById('theme-toggle');
+
     const editor = document.getElementById('editor');
     const editorCanvas = document.getElementById('editor-canvas');
     const cropOverlay = document.getElementById('crop-overlay');
@@ -33,30 +33,11 @@
 
     // Initialize
     function init() {
-        setupTheme();
         setupEventListeners();
-    }
-
-    // Theme handling
-    function setupTheme() {
-        const savedTheme = localStorage.getItem('avatarcropper-theme');
-        if (savedTheme) {
-            document.documentElement.setAttribute('data-theme', savedTheme);
-        } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-            document.documentElement.setAttribute('data-theme', 'light');
-        }
-    }
-
-    function toggleTheme() {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('avatarcropper-theme', newTheme);
     }
 
     // Event listeners
     function setupEventListeners() {
-        themeToggle.addEventListener('click', toggleTheme);
 
         // Drop zone
         dropZone.addEventListener('click', () => fileInput.click());

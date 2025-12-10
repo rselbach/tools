@@ -11,7 +11,7 @@
     const outputSection = document.getElementById('output-section');
     const sqlOutput = document.getElementById('sql-output');
     const copyBtn = document.getElementById('copy-btn');
-    const themeToggle = document.getElementById('theme-toggle');
+
 
     // default settings
     const defaultSettings = {
@@ -109,25 +109,12 @@
         }
     }
 
-    // theme handling
-    function initTheme() {
-        const saved = localStorage.getItem('sqlfmt-theme');
-        if (saved === 'light') {
-            document.documentElement.setAttribute('data-theme', 'light');
-            document.getElementById('prism-theme-dark').disabled = true;
-            document.getElementById('prism-theme-light').disabled = false;
-        }
-    }
-
-    function toggleTheme() {
-        const current = document.documentElement.getAttribute('data-theme');
-        const newTheme = current === 'light' ? 'dark' : 'light';
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('sqlfmt-theme', newTheme);
-
-        // toggle prism themes
-        document.getElementById('prism-theme-dark').disabled = newTheme === 'light';
-        document.getElementById('prism-theme-light').disabled = newTheme === 'dark';
+    // Prism theme handling - sync with page theme
+    function syncPrismTheme() {
+        const theme = document.documentElement.getAttribute('data-theme');
+        const isLight = theme === 'light';
+        document.getElementById('prism-theme-dark').disabled = isLight;
+        document.getElementById('prism-theme-light').disabled = !isLight;
 
         // re-highlight if there's content
         if (!outputSection.classList.contains('hidden')) {
@@ -137,7 +124,10 @@
 
     // initialize
     function init() {
-        initTheme();
+        // Sync Prism theme on load and when theme changes
+        syncPrismTheme();
+        window.addEventListener('theme-changed', syncPrismTheme);
+
         loadSettings();
         applySettings();
 
@@ -157,7 +147,6 @@
         });
 
         copyBtn.addEventListener('click', copyToClipboard);
-        themeToggle.addEventListener('click', toggleTheme);
 
         // focus input on load
         sqlInput.focus();

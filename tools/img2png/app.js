@@ -7,35 +7,15 @@
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('file-input');
     const resultsContainer = document.getElementById('results');
-    const themeToggle = document.getElementById('theme-toggle');
+
 
     // Initialize
     function init() {
-        setupTheme();
         setupEventListeners();
-    }
-
-    // Theme handling
-    function setupTheme() {
-        const savedTheme = localStorage.getItem('img2png-theme');
-        if (savedTheme) {
-            document.documentElement.setAttribute('data-theme', savedTheme);
-        } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-            document.documentElement.setAttribute('data-theme', 'light');
-        }
-    }
-
-    function toggleTheme() {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('img2png-theme', newTheme);
     }
 
     // Event listeners
     function setupEventListeners() {
-        // Theme toggle
-        themeToggle.addEventListener('click', toggleTheme);
 
         // Drop zone click
         dropZone.addEventListener('click', () => fileInput.click());

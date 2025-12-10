@@ -50,7 +50,7 @@
     const exportBtn = document.getElementById('export-btn');
     const exportToggle = document.getElementById('export-toggle');
     const exportDropdown = document.getElementById('export-dropdown');
-    const themeToggle = document.getElementById('theme-toggle');
+
     const formatBtns = document.querySelectorAll('.format-btn');
     const fontGroup = document.getElementById('font-group');
     const fontPicker = document.getElementById('font-picker');
@@ -563,21 +563,6 @@
         updateOutput();
     }
 
-    // theme handling
-    function initTheme() {
-        const saved = localStorage.getItem('thoughtbubble-theme');
-        if (saved === 'light') {
-            document.documentElement.setAttribute('data-theme', 'light');
-        }
-    }
-
-    function toggleTheme() {
-        const current = document.documentElement.getAttribute('data-theme');
-        const newTheme = current === 'light' ? 'dark' : 'light';
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('thoughtbubble-theme', newTheme);
-    }
-
     // close dropdowns when clicking outside
     function closeDropdown() {
         exportSplit.classList.remove('open');
@@ -586,7 +571,6 @@
 
     // initialize
     async function init() {
-        initTheme();
         loadSettings();
 
         // preload all comic fonts for canvas rendering
@@ -608,7 +592,6 @@
             updateOutput();
         });
         copyBtn.addEventListener('click', copyAsciiToClipboard);
-        themeToggle.addEventListener('click', toggleTheme);
 
         formatBtns.forEach(btn => {
             btn.addEventListener('click', () => setFormat(btn.dataset.format));

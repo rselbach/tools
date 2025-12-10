@@ -9,38 +9,18 @@
     const qualitySlider = document.getElementById('quality-slider');
     const qualityValue = document.getElementById('quality-value');
     const resultsContainer = document.getElementById('results');
-    const themeToggle = document.getElementById('theme-toggle');
+
 
     // State
     let jpegQuality = 0.92;
 
     // Initialize
     function init() {
-        setupTheme();
         setupEventListeners();
-    }
-
-    // Theme handling
-    function setupTheme() {
-        const savedTheme = localStorage.getItem('img2jpg-theme');
-        if (savedTheme) {
-            document.documentElement.setAttribute('data-theme', savedTheme);
-        } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-            document.documentElement.setAttribute('data-theme', 'light');
-        }
-    }
-
-    function toggleTheme() {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('img2jpg-theme', newTheme);
     }
 
     // Event listeners
     function setupEventListeners() {
-        // Theme toggle
-        themeToggle.addEventListener('click', toggleTheme);
 
         // Quality slider
         qualitySlider.addEventListener('input', (e) => {

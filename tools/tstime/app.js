@@ -16,7 +16,7 @@
     const isoString = document.getElementById('iso-string');
     const copyIso = document.getElementById('copy-iso');
     const relativeTime = document.getElementById('relative-time');
-    const themeToggle = document.getElementById('theme-toggle');
+
 
     // parse timestamp - handles seconds, milliseconds, nanoseconds
     function parseTimestamp(input) {
@@ -227,30 +227,13 @@
         handleInput();
     }
 
-    // theme handling
-    function initTheme() {
-        const saved = localStorage.getItem('tstime-theme');
-        if (saved === 'light') {
-            document.documentElement.setAttribute('data-theme', 'light');
-        }
-    }
-
-    function toggleTheme() {
-        const current = document.documentElement.getAttribute('data-theme');
-        const newTheme = current === 'light' ? 'dark' : 'light';
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('tstime-theme', newTheme);
-    }
-
     // initialize
     function init() {
-        initTheme();
 
         // event listeners
         tsInput.addEventListener('input', handleInput);
         nowBtn.addEventListener('click', insertNow);
         copyIso.addEventListener('click', copyIsoString);
-        themeToggle.addEventListener('click', toggleTheme);
 
         // focus input on load
         tsInput.focus();
