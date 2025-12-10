@@ -159,6 +159,92 @@ header {
     border-color: var(--accent);
 }
 
+/* Font picker */
+.font-picker {
+    position: relative;
+}
+
+.font-picker-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+    min-width: 160px;
+    justify-content: space-between;
+}
+
+.font-picker-btn:hover {
+    border-color: var(--accent);
+}
+
+.font-picker.open .font-picker-btn {
+    border-color: var(--accent);
+}
+
+.font-picker-btn svg {
+    flex-shrink: 0;
+    transition: transform 0.15s ease;
+}
+
+.font-picker.open .font-picker-btn svg {
+    transform: rotate(180deg);
+}
+
+.font-picker-label {
+    font-size: 1rem;
+}
+
+.font-picker-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    z-index: 100;
+    display: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+.font-picker.open .font-picker-dropdown {
+    display: block;
+}
+
+.font-picker-option {
+    padding: 0.6rem 0.75rem;
+    cursor: pointer;
+    transition: background 0.1s ease;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+}
+
+.font-picker-option:first-child {
+    border-radius: 6px 6px 0 0;
+}
+
+.font-picker-option:last-child {
+    border-radius: 0 0 6px 6px;
+}
+
+.font-picker-option:hover {
+    background: var(--bg-secondary);
+}
+
+.font-picker-option.selected {
+    background: var(--accent);
+    color: white;
+}
+
 /* Format toggle */
 .format-toggle {
     display: flex;

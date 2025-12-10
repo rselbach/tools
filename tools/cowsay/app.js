@@ -3,6 +3,40 @@
 (function () {
     'use strict';
 
+    // available comic fonts with their sizing adjustments
+    const FONTS = {
+        bangers: {
+            name: 'Bangers',
+            family: '"Bangers", cursive',
+            size: 22,
+            lineHeight: 1.3,
+        },
+        comicNeue: {
+            name: 'Comic Neue',
+            family: '"Comic Neue", cursive',
+            size: 20,
+            lineHeight: 1.4,
+        },
+        luckiestGuy: {
+            name: 'Luckiest Guy',
+            family: '"Luckiest Guy", cursive',
+            size: 20,
+            lineHeight: 1.35,
+        },
+        permanentMarker: {
+            name: 'Permanent Marker',
+            family: '"Permanent Marker", cursive',
+            size: 20,
+            lineHeight: 1.4,
+        },
+        archivoBlack: {
+            name: 'Archivo Black',
+            family: '"Archivo Black", sans-serif',
+            size: 18,
+            lineHeight: 1.45,
+        },
+    };
+
     // DOM elements
     const textInput = document.getElementById('text-input');
     const maxWidthInput = document.getElementById('max-width');
@@ -18,12 +52,18 @@
     const exportDropdown = document.getElementById('export-dropdown');
     const themeToggle = document.getElementById('theme-toggle');
     const formatBtns = document.querySelectorAll('.format-btn');
+    const fontGroup = document.getElementById('font-group');
+    const fontPicker = document.getElementById('font-picker');
+    const fontPickerBtn = document.getElementById('font-picker-btn');
+    const fontPickerLabel = document.getElementById('font-picker-label');
+    const fontPickerDropdown = document.getElementById('font-picker-dropdown');
 
     // default settings
     const defaultSettings = {
         format: 'ascii',
         maxWidth: 40,
         exportAction: 'download',
+        font: 'bangers',
     };
 
     // current settings
@@ -53,8 +93,37 @@
     // apply settings to UI
     function applySettings() {
         maxWidthInput.value = settings.maxWidth;
+        updateFontPicker(settings.font);
         setFormat(settings.format, false); // don't save again
         updateExportDropdown(settings.exportAction);
+    }
+
+    // update font picker display
+    function updateFontPicker(fontKey) {
+        const fontConfig = FONTS[fontKey];
+        if (!fontConfig) return;
+        fontPickerLabel.textContent = fontConfig.name;
+        fontPickerLabel.style.fontFamily = fontConfig.family;
+        // update selected state in dropdown
+        fontPickerDropdown.querySelectorAll('.font-picker-option').forEach(opt => {
+            opt.classList.toggle('selected', opt.dataset.font === fontKey);
+        });
+    }
+
+    // build font picker dropdown
+    function buildFontPicker() {
+        fontPickerDropdown.innerHTML = '';
+        for (const [key, config] of Object.entries(FONTS)) {
+            const option = document.createElement('div');
+            option.className = 'font-picker-option';
+            option.dataset.font = key;
+            option.textContent = config.name;
+            option.style.fontFamily = config.family;
+            if (key === settings.font) {
+                option.classList.add('selected');
+            }
+            fontPickerDropdown.appendChild(option);
+        }
     }
 
     // wrap text to specified width
@@ -167,9 +236,10 @@
         }
 
         const padding = 36;
-        const fontSize = 22;
-        const lineHeight = fontSize * 1.3;
-        const font = `${fontSize}px "Bangers", cursive`;
+        const fontConfig = FONTS[settings.font] || FONTS.bangers;
+        const fontSize = fontConfig.size;
+        const lineHeight = fontSize * fontConfig.lineHeight;
+        const font = `${fontSize}px ${fontConfig.family}`;
         const strokeWidth = 2;
 
         // measure text
@@ -445,6 +515,8 @@
         formatBtns.forEach(btn => {
             btn.classList.toggle('active', btn.dataset.format === format);
         });
+        // show font picker only for PNG mode
+        fontGroup.classList.toggle('hidden', format !== 'png');
         if (save) saveSettings();
         updateOutput();
     }
@@ -464,9 +536,10 @@
         localStorage.setItem('thoughtbubble-theme', newTheme);
     }
 
-    // close dropdown when clicking outside
+    // close dropdowns when clicking outside
     function closeDropdown() {
         exportSplit.classList.remove('open');
+        fontPicker.classList.remove('open');
     }
 
     // initialize
@@ -474,11 +547,13 @@
         initTheme();
         loadSettings();
 
-        // preload the comic font for canvas rendering
+        // preload all comic fonts for canvas rendering
         try {
-            await document.fonts.load('22px "Bangers"');
+            await Promise.all(Object.values(FONTS).map(f =>
+                document.fonts.load(`${f.size}px ${f.family}`)
+            ));
         } catch (e) {
-            console.warn('Failed to preload Bangers font:', e);
+            console.warn('Failed to preload fonts:', e);
         }
 
         applySettings();
@@ -495,6 +570,24 @@
 
         formatBtns.forEach(btn => {
             btn.addEventListener('click', () => setFormat(btn.dataset.format));
+        });
+
+        // font picker
+        buildFontPicker();
+        fontPickerBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            fontPicker.classList.toggle('open');
+            exportSplit.classList.remove('open');
+        });
+        fontPickerDropdown.addEventListener('click', (e) => {
+            const option = e.target.closest('.font-picker-option');
+            if (option) {
+                settings.font = option.dataset.font;
+                updateFontPicker(settings.font);
+                fontPicker.classList.remove('open');
+                saveSettings();
+                updateOutput();
+            }
         });
 
         // export split button

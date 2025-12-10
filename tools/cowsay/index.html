@@ -8,7 +8,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bangers&family=Comic+Neue:wght@700&family=Luckiest+Guy&family=Permanent+Marker&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <!-- Our styles -->
     <link rel="stylesheet" href="style.css">
@@ -55,6 +55,18 @@
                 <div class="format-toggle">
                     <button type="button" class="format-btn active" data-format="ascii">ASCII</button>
                     <button type="button" class="format-btn" data-format="png">PNG</button>
+                </div>
+            </div>
+            <div class="option-group hidden" id="font-group">
+                <label>Font</label>
+                <div class="font-picker" id="font-picker">
+                    <button type="button" class="font-picker-btn" id="font-picker-btn">
+                        <span class="font-picker-label" id="font-picker-label">Bangers</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="font-picker-dropdown" id="font-picker-dropdown"></div>
                 </div>
             </div>
         </div>
