@@ -85,7 +85,8 @@ header h1 {
     gap: 0.5rem;
 }
 
-.github-link {
+.github-link,
+.home-link {
     background: var(--bg-secondary);
     border: 1px solid var(--border);
     border-radius: 8px;
@@ -98,11 +99,13 @@ header h1 {
     text-decoration: none;
 }
 
-.github-link:hover {
+.github-link:hover,
+.home-link:hover {
     border-color: var(--accent);
 }
 
-.github-link svg {
+.github-link svg,
+.home-link svg {
     display: block;
 }
 
