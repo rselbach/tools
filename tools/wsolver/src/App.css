@@ -82,11 +82,39 @@ h2 {
   margin: 0 0 1rem 0;
 }
 
+/* Header actions (github + theme toggle) */
+.header-actions {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.github-link {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem;
+  color: var(--text-primary);
+  transition: border-color 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.github-link:hover {
+  border-color: var(--accent);
+}
+
+.github-link svg {
+  display: block;
+}
+
 /* Theme toggle */
 .theme-toggle {
-  position: absolute;
-  right: 0;
-  top: 0;
   background: var(--bg-secondary);
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -117,9 +145,6 @@ h2 {
 
 /* Help button */
 .help-button {
-  position: absolute;
-  right: 48px;
-  top: 0;
   width: 36px;
   height: 36px;
   border-radius: 8px;
@@ -668,9 +693,6 @@ h2 {
     padding-bottom: calc(200px + env(safe-area-inset-bottom, 0px));
   }
 
-  .help-button {
-    right: 48px;
-  }
 }
 
 @media (max-width: 400px) {

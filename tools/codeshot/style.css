@@ -1,15 +1,7 @@
 /* Codeshot - Stylesheet */
 
+/* Tool-specific variables */
 :root {
-    --bg-primary: #0f0f1a;
-    --bg-secondary: #1a1a2e;
-    --text-primary: #f0f0f5;
-    --text-secondary: #b0b0c0;
-    --text-muted: #6a6a80;
-    --accent: #6366f1;
-    --accent-hover: #818cf8;
-    --border: #2a2a40;
-
     /* Window theme colors */
     --window-bg-dark: #1e1e2e;
     --window-bg-light: #ffffff;
@@ -17,40 +9,9 @@
     --window-header-light: #e8e8e8;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
-    line-height: 1.6;
-    min-height: 100vh;
-}
-
+/* Container override for wider layout */
 .container {
     max-width: 1000px;
-    margin: 0 auto;
-    padding: 2rem 1.5rem;
-}
-
-/* Header */
-header {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-header h1 {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 0.25rem;
-}
-
-.tagline {
-    color: var(--text-secondary);
 }
 
 /* Controls */
@@ -646,29 +607,6 @@ body.resizing * {
 .btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-}
-
-/* Footer */
-footer {
-    text-align: center;
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--border);
-}
-
-footer p {
-    color: var(--text-muted);
-    font-size: 0.875rem;
-    margin: 0.25rem 0;
-}
-
-footer a {
-    color: var(--text-muted);
-    text-decoration: none;
-}
-
-footer a:hover {
-    color: var(--accent);
 }
 
 /* Hide controls based on background type */
