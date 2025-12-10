@@ -167,9 +167,9 @@
         }
 
         const padding = 36;
-        const fontSize = 18;
-        const lineHeight = fontSize * 1.4;
-        const font = `${fontSize}px "JetBrains Mono", monospace`;
+        const fontSize = 22;
+        const lineHeight = fontSize * 1.3;
+        const font = `${fontSize}px "Bangers", cursive`;
         const strokeWidth = 2;
 
         // measure text
@@ -470,9 +470,17 @@
     }
 
     // initialize
-    function init() {
+    async function init() {
         initTheme();
         loadSettings();
+
+        // preload the comic font for canvas rendering
+        try {
+            await document.fonts.load('22px "Bangers"');
+        } catch (e) {
+            console.warn('Failed to preload Bangers font:', e);
+        }
+
         applySettings();
 
         // event listeners
