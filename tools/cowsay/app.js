@@ -436,16 +436,17 @@
             ctx.stroke();
         }
 
-        // draw text
+        // draw text (centered)
         ctx.font = font;
         ctx.fillStyle = '#333333';
         ctx.textBaseline = 'top';
+        ctx.textAlign = 'center';
 
-        const textX = bx + (bubbleWidth - textWidth) / 2;
+        const textCenterX = bx + bubbleWidth / 2;
         const textY = by + (bubbleHeight - textHeight) / 2;
 
         for (let i = 0; i < lines.length; i++) {
-            ctx.fillText(lines[i], textX, textY + i * lineHeight);
+            ctx.fillText(lines[i], textCenterX, textY + i * lineHeight);
         }
     }
 
