@@ -15,3 +15,6 @@ Thumbs.db
 # Generated files
 /index.html
 dist/
+
+# Node.js
+node_modules/

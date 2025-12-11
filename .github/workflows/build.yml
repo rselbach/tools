@@ -35,20 +35,33 @@ jobs:
           npm ci
           npm run build
 
+      # Build regex tester (Vite app with RE2 WASM)
+      - name: Build regex
+        working-directory: tools/regex
+        run: |
+          npm ci
+          npm run build
+
       - name: Prepare deploy directory
         run: |
           mkdir -p dist
           cp index.html dist/
           cp -r static dist/
 
-          # copy tools, but replace wsolver source with its build output
+          # copy tools, replacing Vite apps with their build output
           for tool in tools/*/; do
             name=$(basename "$tool")
-            if [ "$name" = "wsolver" ]; then
-              cp -r tools/wsolver/dist dist/wsolver
-            else
-              cp -r "$tool" dist/
-            fi
+            case "$name" in
+              wsolver)
+                cp -r tools/wsolver/dist dist/wsolver
+                ;;
+              regex)
+                cp -r tools/regex/dist dist/regex
+                ;;
+              *)
+                cp -r "$tool" dist/
+                ;;
+            esac
           done
 
       - name: Set up SSH

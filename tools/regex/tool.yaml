@@ -1,0 +1,8 @@
+name: Regex Tester
+description: Test regular expressions with JavaScript or RE2/Go engine
+icon: regex
+path: /regex/
+tags:
+  - development
+  - regex
+  - testing
