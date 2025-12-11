@@ -1,11 +1,31 @@
 import './App.css';
 
+// Import the WASM file URL - Vite will handle this
+import wasmUrl from 're2-wasm/build/wasm/re2.wasm?url';
+
+// Pre-fetch WASM and set up Module BEFORE any other code runs
+// This uses top-level await to ensure the WASM is loaded first
+const wasmResponse = await fetch(wasmUrl);
+const wasmBinary = await wasmResponse.arrayBuffer();
+
+// Set up the global Module object that Emscripten looks for
+// This MUST happen before re2-wasm is imported
+globalThis.Module = globalThis.Module || {};
+globalThis.Module.wasmBinary = wasmBinary;
+globalThis.Module.locateFile = (path) => {
+    if (path.endsWith('.wasm')) {
+        return wasmUrl;
+    }
+    return path;
+};
+
+// NOW we can import re2-wasm - it will use our pre-loaded binary
+const { RE2 } = await import('re2-wasm');
+
 // State
 let currentEngine = 'javascript';
 let activeFlags = new Set(['g']);
 let debounceTimer = null;
-let RE2Class = null;
-let re2LoadError = null;
 
 // DOM Elements
 const engineSelect = document.getElementById('engine');
@@ -41,22 +61,6 @@ const engineInfoMessages = {
     re2: 'RE2/Go engine - no backreferences or lookahead, but safe from ReDoS'
 };
 
-// Lazy load RE2
-async function loadRE2() {
-    if (RE2Class) return RE2Class;
-    if (re2LoadError) throw re2LoadError;
-    
-    try {
-        const module = await import('re2-wasm');
-        RE2Class = module.RE2;
-        return RE2Class;
-    } catch (e) {
-        re2LoadError = e;
-        console.error('Failed to load RE2:', e);
-        throw e;
-    }
-}
-
 // Initialize
 function init() {
     initTheme();
@@ -77,11 +81,6 @@ function init() {
     
     // Initial update
     updateEngineUI();
-    
-    // Pre-load RE2 in background
-    loadRE2().catch(() => {
-        // Silently fail - will show error when user tries to use RE2
-    });
 }
 
 function handleEngineChange() {
@@ -139,7 +138,7 @@ function getFlags() {
     return flags;
 }
 
-async function runMatcher() {
+function runMatcher() {
     const pattern = patternInput.value;
     const text = testString.value;
     
@@ -157,13 +156,7 @@ async function runMatcher() {
         let regex;
         
         if (currentEngine === 're2') {
-            try {
-                const RE2 = await loadRE2();
-                regex = new RE2(pattern, flags);
-            } catch (e) {
-                showError('Failed to load RE2 engine: ' + e.message);
-                return;
-            }
+            regex = new RE2(pattern, flags);
         } else {
             regex = new RegExp(pattern, flags);
         }
@@ -333,5 +326,9 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// Start the app
-document.addEventListener('DOMContentLoaded', init);
+// Start the app when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
