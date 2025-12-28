@@ -23,4 +23,21 @@
             window.dispatchEvent(new CustomEvent('theme-changed', { detail: { theme: next } }));
         });
     }
+
+    // Prism.js theme syncing - automatically syncs #prism-theme-dark and #prism-theme-light
+    // with the current page theme. No-op if elements aren't present.
+    function syncPrismTheme() {
+        const darkLink = document.getElementById('prism-theme-dark');
+        const lightLink = document.getElementById('prism-theme-light');
+        if (!darkLink || !lightLink) return;
+
+        const theme = document.documentElement.getAttribute('data-theme');
+        const isLight = theme === 'light';
+        darkLink.disabled = isLight;
+        lightLink.disabled = !isLight;
+    }
+
+    // sync on load and listen for theme changes
+    syncPrismTheme();
+    window.addEventListener('theme-changed', syncPrismTheme);
 })();
