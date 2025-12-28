@@ -6,6 +6,7 @@
     <meta name="theme-color" content="#0f0f1a">
     <title>{{.Title}}</title>
     <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+    <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
@@ -99,6 +100,11 @@
                 localStorage.setItem('tools-theme', next);
             });
         })();
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js');
+        }
     </script>
 </body>
 </html>
