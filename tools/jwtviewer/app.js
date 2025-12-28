@@ -262,25 +262,15 @@
         }
     }
 
-    // Prism theme handling - sync with page theme
-    function syncPrismTheme() {
-        const theme = document.documentElement.getAttribute('data-theme');
-        const isLight = theme === 'light';
-        document.getElementById('prism-theme-dark').disabled = isLight;
-        document.getElementById('prism-theme-light').disabled = !isLight;
-
-        // re-highlight if there's content
-        if (!decodedSections.classList.contains('hidden')) {
-            Prism.highlightElement(headerJson);
-            Prism.highlightElement(payloadJson);
-        }
-    }
-
     // initialize
     function init() {
-        // Sync Prism theme on load and when theme changes
-        syncPrismTheme();
-        window.addEventListener('theme-changed', syncPrismTheme);
+        // Re-highlight Prism content when theme changes
+        window.addEventListener('theme-changed', function() {
+            if (!decodedSections.classList.contains('hidden')) {
+                Prism.highlightElement(headerJson);
+                Prism.highlightElement(payloadJson);
+            }
+        });
 
         // event listeners
         jwtInput.addEventListener('input', handleInput);
