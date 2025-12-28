@@ -5,6 +5,11 @@
 (function() {
     'use strict';
 
+    // Configure Prism autoloader to use local components
+    if (typeof Prism !== 'undefined' && Prism.plugins && Prism.plugins.autoloader) {
+        Prism.plugins.autoloader.languages_path = '/static/vendor/prism/components/';
+    }
+
     // DOM elements
     const elements = {
         codeInput: document.getElementById('code-input'),
