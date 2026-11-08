@@ -36,7 +36,7 @@ jobs:
       - name: Prepare deploy directory
         run: |
           mkdir -p dist
-          cp index.html dist/
+          cp index.html 404.html sw.js manifest.json dist/
           cp -r static dist/
 
           # copy tools, but replace wsolver source with its build output
