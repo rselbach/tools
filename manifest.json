@@ -4,8 +4,8 @@
   "description": "A collection of useful web tools",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0f0f1a",
-  "theme_color": "#0f0f1a",
+  "background_color": "#161512",
+  "theme_color": "#161512",
   "icons": [
     {
       "src": "/static/favicon.svg",

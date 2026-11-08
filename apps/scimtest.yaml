@@ -1,0 +1,6 @@
+name: scimtest
+description: A local identity provider for testing your app's OIDC, SAML, and SCIM integrations.
+url: https://rselbach.com/scimtest/
+icon: https://rselbach.com/scimtest/icon.png
+platforms: [macOS, Linux]
+feed: https://rselbach.github.io/scimtest/update.json

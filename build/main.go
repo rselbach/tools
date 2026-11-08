@@ -2,10 +2,12 @@
 package main
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
 	"html/template"
+	"io/fs"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -14,29 +16,32 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Tool represents the metadata for a single tool.
+// Tool is a browser tool that lives in this repository under tools/<Path>/.
 type Tool struct {
-	Name        string    `yaml:"name"`
-	Description string    `yaml:"description"`
-	Icon        string    `yaml:"icon"`
-	Path        string    // derived from directory name
-	AddedAt     time.Time // first git commit
-	UpdatedAt   time.Time // latest git commit
+	Name        string `yaml:"name"`
+	Description string `yaml:"description"`
+	Path        string `yaml:"-"`
+}
+
+// App is a project developed in another repository that deploys its own site.
+type App struct {
+	Name        string   `yaml:"name"`
+	Description string   `yaml:"description"`
+	URL         string   `yaml:"url"`
+	Icon        string   `yaml:"icon"`
+	Platforms   []string `yaml:"platforms"`
+	Feed        string   `yaml:"feed"`
 }
 
 // PageData holds all data passed to the template.
 type PageData struct {
-	Title           string
-	Tagline         string
-	RepoURL         string
-	Tools           []Tool
-	HasTools        bool
-	RecentlyAdded   []Tool
-	RecentlyUpdated []Tool
+	Apps  []App
+	Tools []Tool
+	Year  int
 }
 
 const (
-	defaultIcon = "🔧"
+	appsDir     = "apps"
 	toolsDir    = "tools"
 	templateDir = "template"
 	outputFile  = "index.html"
@@ -50,67 +55,68 @@ func main() {
 }
 
 func run() error {
+	apps, err := discoverApps(appsDir)
+	if err != nil {
+		return fmt.Errorf("discovering apps: %w", err)
+	}
+
 	tools, err := discoverTools(toolsDir)
 	if err != nil {
 		return fmt.Errorf("discovering tools: %w", err)
 	}
 
-	// recently added (sorted by AddedAt descending)
-	recentlyAdded := make([]Tool, len(tools))
-	copy(recentlyAdded, tools)
-	sort.Slice(recentlyAdded, func(i, j int) bool {
-		return recentlyAdded[i].AddedAt.After(recentlyAdded[j].AddedAt)
+	sort.Slice(apps, func(i, j int) bool {
+		return strings.ToLower(apps[i].Name) < strings.ToLower(apps[j].Name)
 	})
-	if len(recentlyAdded) > 4 {
-		recentlyAdded = recentlyAdded[:4]
-	}
-
-	// recently updated (sorted by UpdatedAt descending)
-	recentlyUpdated := make([]Tool, len(tools))
-	copy(recentlyUpdated, tools)
-	sort.Slice(recentlyUpdated, func(i, j int) bool {
-		return recentlyUpdated[i].UpdatedAt.After(recentlyUpdated[j].UpdatedAt)
-	})
-	if len(recentlyUpdated) > 4 {
-		recentlyUpdated = recentlyUpdated[:4]
-	}
-
-	// sort main list alphabetically, case-insensitive
 	sort.Slice(tools, func(i, j int) bool {
 		return strings.ToLower(tools[i].Name) < strings.ToLower(tools[j].Name)
 	})
 
-	data := PageData{
-		Title:           "Roberto's Toolset",
-		Tagline:         "A collection of small web utilities",
-		RepoURL:         "https://github.com/rselbach/tools",
-		Tools:           tools,
-		HasTools:        len(tools) > 0,
-		RecentlyAdded:   recentlyAdded,
-		RecentlyUpdated: recentlyUpdated,
+	funcs := template.FuncMap{
+		"join":       strings.Join,
+		"displayURL": displayURL,
 	}
-
 	tmplPath := filepath.Join(templateDir, "index.tmpl")
-	tmpl, err := template.ParseFiles(tmplPath)
+	tmpl, err := template.New(filepath.Base(tmplPath)).Funcs(funcs).ParseFiles(tmplPath)
 	if err != nil {
 		return fmt.Errorf("parsing template: %w", err)
 	}
 
-	out, err := os.Create(outputFile)
-	if err != nil {
-		return fmt.Errorf("creating output file: %w", err)
-	}
-	defer out.Close()
-
-	if err := tmpl.Execute(out, data); err != nil {
+	var out bytes.Buffer
+	data := PageData{Apps: apps, Tools: tools, Year: time.Now().Year()}
+	if err := tmpl.Execute(&out, data); err != nil {
 		return fmt.Errorf("executing template: %w", err)
 	}
+	if err := os.WriteFile(outputFile, out.Bytes(), 0o644); err != nil {
+		return fmt.Errorf("writing %s: %w", outputFile, err)
+	}
 
-	fmt.Printf("generated %s with %d tools\n", outputFile, len(tools))
+	fmt.Printf("generated %s with %d apps and %d tools\n", outputFile, len(apps), len(tools))
 	return nil
 }
 
-// discoverTools walks the tools directory and reads tool.yaml from each subdir.
+// discoverApps reads every <slug>.yaml file in the apps directory.
+func discoverApps(dir string) ([]App, error) {
+	paths, err := filepath.Glob(filepath.Join(dir, "*.yaml"))
+	if err != nil {
+		return nil, err
+	}
+
+	apps := make([]App, 0, len(paths))
+	for _, path := range paths {
+		app, err := readYAML[App](path)
+		if err != nil {
+			return nil, fmt.Errorf("reading %s: %w", path, err)
+		}
+		if app.Name == "" || app.Description == "" || app.URL == "" || app.Icon == "" {
+			return nil, fmt.Errorf("%s: name, description, url, and icon are required", path)
+		}
+		apps = append(apps, app)
+	}
+	return apps, nil
+}
+
+// discoverTools reads tool.yaml from each subdirectory of the tools directory.
 func discoverTools(dir string) ([]Tool, error) {
 	entries, err := os.ReadDir(dir)
 	if err != nil {
@@ -124,72 +130,37 @@ func discoverTools(dir string) ([]Tool, error) {
 		}
 
 		toolPath := filepath.Join(dir, entry.Name(), "tool.yaml")
-		tool, err := readToolYAML(toolPath)
-		if err != nil {
-			// skip directories without tool.yaml
-			if os.IsNotExist(err) {
-				continue
-			}
+		tool, err := readYAML[Tool](toolPath)
+		switch {
+		case errors.Is(err, fs.ErrNotExist):
+			continue
+		case err != nil:
 			return nil, fmt.Errorf("reading %s: %w", toolPath, err)
 		}
 
 		tool.Path = entry.Name()
-		if tool.Icon == "" {
-			tool.Icon = defaultIcon
-		}
-
-		// get git dates
-		toolDir := filepath.Join(dir, entry.Name())
-		tool.AddedAt = getGitFirstCommit(toolDir)
-		tool.UpdatedAt = getGitLastCommit(toolDir)
-
 		tools = append(tools, tool)
 	}
-
 	return tools, nil
 }
 
-// readToolYAML parses a tool.yaml file.
-func readToolYAML(path string) (Tool, error) {
+// readYAML parses the YAML file at path into a T.
+func readYAML[T any](path string) (T, error) {
+	var v T
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return Tool{}, err
+		return v, err
 	}
-
-	var tool Tool
-	if err := yaml.Unmarshal(data, &tool); err != nil {
-		return Tool{}, err
+	if err := yaml.Unmarshal(data, &v); err != nil {
+		return v, err
 	}
-
-	return tool, nil
+	return v, nil
 }
 
-// getGitFirstCommit returns the date of the first commit for a path.
-func getGitFirstCommit(path string) time.Time {
-	cmd := exec.Command("git", "log", "--diff-filter=A", "--follow", "--format=%aI", "--reverse", "--", path)
-	out, err := cmd.Output()
-	if err != nil {
-		return time.Time{}
-	}
-	lines := strings.Split(strings.TrimSpace(string(out)), "\n")
-	if len(lines) == 0 || lines[0] == "" {
-		return time.Time{}
-	}
-	t, _ := time.Parse(time.RFC3339, lines[0])
-	return t
-}
-
-// getGitLastCommit returns the date of the most recent commit for a path.
-func getGitLastCommit(path string) time.Time {
-	cmd := exec.Command("git", "log", "-1", "--format=%aI", "--", path)
-	out, err := cmd.Output()
-	if err != nil {
-		return time.Time{}
-	}
-	s := strings.TrimSpace(string(out))
-	if s == "" {
-		return time.Time{}
-	}
-	t, _ := time.Parse(time.RFC3339, s)
-	return t
+// displayURL drops the scheme and trailing slash, so https://rselbach.com/onda/
+// reads as rselbach.com/onda.
+func displayURL(u string) string {
+	u = strings.TrimPrefix(u, "https://")
+	u = strings.TrimPrefix(u, "http://")
+	return strings.TrimSuffix(u, "/")
 }

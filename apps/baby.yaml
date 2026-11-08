@@ -1,0 +1,6 @@
+name: Baby
+description: Keeps your Mac awake from the menu bar until you click again, a timer ends, or a job finishes.
+url: https://rselbach.com/baby/
+icon: https://rselbach.com/baby/icon.png
+platforms: [macOS]
+feed: https://rselbach.github.io/baby/update.json
