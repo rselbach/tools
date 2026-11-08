@@ -41,29 +41,12 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+// the cache is only an offline fallback, so deploys and the apps' update
+// feeds always reach visitors who are online
 self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url);
-
-  if (url.pathname.startsWith('/static/')) {
-    event.respondWith(cacheFirst(event.request));
-  } else if (event.request.mode === 'navigate' || event.request.headers.get('accept')?.includes('text/html')) {
-    event.respondWith(networkFirst(event.request));
-  } else {
-    event.respondWith(cacheFirst(event.request));
-  }
+  if (new URL(event.request.url).origin !== self.location.origin) return;
+  event.respondWith(networkFirst(event.request));
 });
-
-async function cacheFirst(request) {
-  const cached = await caches.match(request);
-  if (cached) return cached;
-
-  const response = await fetch(request);
-  if (response.ok) {
-    const cache = await caches.open(CACHE_NAME);
-    cache.put(request, response.clone());
-  }
-  return response;
-}
 
 async function networkFirst(request) {
   try {
