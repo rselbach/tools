@@ -1,0 +1,6 @@
+name: Onda
+description: Dictation that types into your editor, terminal, or chat. Recognition runs on your computer.
+url: https://rselbach.com/onda/
+icon: https://rselbach.com/onda/icon.png
+platforms: [macOS, Linux]
+feed: https://rselbach.github.io/onda/update.json
